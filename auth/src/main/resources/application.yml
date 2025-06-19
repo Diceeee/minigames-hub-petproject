@@ -1,0 +1,50 @@
+spring:
+  profiles:
+    include: secrets
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: 761706611693-vu8eit6acq8ooa6c897i7ff3h25kcdnj.apps.googleusercontent.com
+            scope:
+              - openid
+              - profile
+              - email
+        provider:
+          google:
+            authorization-uri: https://accounts.google.com/o/oauth2/v2/auth
+            token-uri: https://oauth2.googleapis.com/token
+            user-info-uri: https://www.googleapis.com/oauth2/v3/userinfo
+            user-name-attribute: sub
+  application:
+    name: AuthService
+  datasource:
+    url: jdbc:postgresql://localhost:5432/auth_service_db
+    username: auth_service
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    enabled: true
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        show_sql: true
+  liquibase:
+    change-log: classpath:db/changelog/changelog-master.xml
+    enabled: true
+
+server:
+  port: 5000
+
+logging:
+  level:
+    root: INFO
+    org.springframework.security: DEBUG
+    org.springframework.security.web: DEBUG
+    org.springframework.security.oauth2: DEBUG
+    org.springframework.security.oauth2.server.authorization: DEBUG
+    org.hibernate.cfg: DEBUG
+    org.hibernate.boot.model.naming: DEBUG

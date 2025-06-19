@@ -1,0 +1,28 @@
+== Auth service documentation
+
+Auth service is infrastructure service built on Spring Security.
+
+Authentication is stateless and made via JWT tokens and using access tokens, refresh tokens approach that are stored in secure cookies.
+
+Access tokens are short-living tokens, they are used to every request in application, they are signed and can be validated. Access tokens are automatically refreshed in 'refresh window' period, meaning that if they are going to expire soon, they are automatically prolonged.
+
+Refresh tokens are long-living tokens, they are sent only to refresh endpoint and used to refresh user's access tokens.
+
+Refresh token also uses 'sliding expiration' approach: when refresh is performed, user also refreshes the refresh token, so technically, it could leave without expiration at all that lead to positive user experience (you will not log out suddenly in the middle of process).
+
+Auto-refresh is performed only during users GET requests, that guarantees 'invisible' refresh in background without impacting user's experience.
+
+=== Responsibilities
+==== Login
+Users can log in to application using external providers as Google, Facebook, or using usual username/email login flow.
+
+==== Logout
+Users can log out from application. It is equal to remove of access/refresh tokens from cookies.
+
+==== Registration
+Users can register in application using common registration flow or registration as result of first login using external provider as Google/Facebook/other.
+
+In case of registration after first login using external provider, part of data will be pre-saved for user, while other data should still be set during registration. Also, email verification is skipped in this scenario cause external provider already tells if email is verified.
+
+=== Per-responsibility documentations list
+==== link:./login-flows.adoc[Login flows]

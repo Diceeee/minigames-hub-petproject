@@ -1,0 +1,11 @@
+1. Email verification
+2. Google account bind
+3. Registration
+4. Refresh token implementation (DONE)
+5. Users stored in DB
+6. User's authorities (optional)
+7. Users' tokens must have his authorities
+8. Extract some important configs/constants to properties or, at least, constants separate class(es)
+9. Add validation on input and db-saves
+
+10. Remove refresh-token on logout
