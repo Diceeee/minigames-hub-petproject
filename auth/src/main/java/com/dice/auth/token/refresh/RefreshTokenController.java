@@ -5,6 +5,7 @@ import com.dice.auth.CookiesCreator;
 import com.dice.auth.core.util.AuthUtils;
 import com.dice.auth.token.TokensGenerator;
 import com.nimbusds.jose.JOSEException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
@@ -44,18 +45,19 @@ public class RefreshTokenController {
             }
 
             Pair<String, String> accessAndRefreshTokens = tokensGenerator.generateForRefresh(refreshToken, userAgent, AuthUtils.getClientIpAddress(request));
-            ResponseCookie accessTokenCookie = cookiesCreator.createAccessTokenCookie(accessAndRefreshTokens.getLeft());
-            ResponseCookie refreshTokenCookie = cookiesCreator.createRefreshTokenCookie(accessAndRefreshTokens.getRight());
+            
+            Cookie accessTokenCookie = cookiesCreator.createAccessTokenCookie(accessAndRefreshTokens.getLeft());
+            Cookie refreshTokenCookie = cookiesCreator.createRefreshTokenCookie(accessAndRefreshTokens.getRight());
 
-            response.addHeader(HttpHeaders.SET_COOKIE, accessTokenCookie.toString());
-            response.addHeader(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString());
+            response.addCookie(accessTokenCookie);
+            response.addCookie(refreshTokenCookie);
             return "redirect:" + redirectTo;
         } catch (JOSEException e) {
-            ResponseCookie accessTokenCookie = cookiesCreator.getDeletedAccessTokenCookie();
-            ResponseCookie refreshTokenCookie = cookiesCreator.getDeletedRefreshTokenCookie();
+            Cookie accessTokenCookie = cookiesCreator.getDeletedAccessTokenCookie();
+            Cookie refreshTokenCookie = cookiesCreator.getDeletedRefreshTokenCookie();
 
-            response.addHeader(HttpHeaders.SET_COOKIE, accessTokenCookie.toString());
-            response.addHeader(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString());
+            response.addCookie(accessTokenCookie);
+            response.addCookie(refreshTokenCookie);
             return "redirect:" + AuthConstants.Uris.LOGIN;
         }
     }

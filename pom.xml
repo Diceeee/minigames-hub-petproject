@@ -14,7 +14,7 @@
     <version>0.0.3</version>
     <packaging>pom</packaging>
     <name>Pet Project</name>
-    <description>My AWS test application</description>
+    <description>Pet Project</description>
     <url/>
 
     <licenses>

@@ -8,6 +8,8 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.web.servlet.error.ErrorController;
 import org.springframework.lang.Nullable;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -22,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class AuthServiceController implements ErrorController {
 
     private final UserService userService;
+    private final JavaMailSender mailSender;
 
     @GetMapping("/")
     public String home(@AuthenticationPrincipal Jwt jwt, Model model) {
@@ -29,6 +32,17 @@ public class AuthServiceController implements ErrorController {
         User user = userService.getUserById(userId);
         model.addAttribute("user", user);
 
+        return "home";
+    }
+
+    @GetMapping("/emailtest")
+    public String emailtest() {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo("dageler70@gmail.com");
+        message.setSubject("Email verification");
+        message.setText("Click here to verify email: verify");
+
+        mailSender.send(message);
         return "home";
     }
 

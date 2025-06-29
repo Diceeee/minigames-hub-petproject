@@ -8,12 +8,11 @@ import com.dice.auth.token.refresh.exception.SessionAssociatedWithRefreshTokenNo
 import com.nimbusds.jose.JOSEException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.stereotype.Component;
@@ -32,11 +31,11 @@ public class TokensLogoutHandler implements LogoutHandler {
         AuthUtils.getCookieValue(request, AuthConstants.Cookies.REFRESH_TOKEN)
                 .ifPresent(this::endRefreshTokenSession);
 
-        ResponseCookie accessTokenCookie = cookiesCreator.getDeletedAccessTokenCookie();
-        ResponseCookie refreshTokenCookie = cookiesCreator.getDeletedRefreshTokenCookie();
+        Cookie accessTokenCookie = cookiesCreator.getDeletedAccessTokenCookie();
+        Cookie refreshTokenCookie = cookiesCreator.getDeletedRefreshTokenCookie();
 
-        response.addHeader(HttpHeaders.SET_COOKIE, accessTokenCookie.toString());
-        response.addHeader(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString());
+        response.addCookie(accessTokenCookie);
+        response.addCookie(refreshTokenCookie);
     }
 
     private void endRefreshTokenSession(String refreshToken) {

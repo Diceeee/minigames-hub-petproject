@@ -9,13 +9,12 @@ import com.dice.auth.user.dto.User;
 import com.dice.auth.user.exception.UserNotFoundException;
 import com.nimbusds.jose.JOSEException;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.tuple.Pair;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -66,11 +65,11 @@ public class TokensGeneratingAuthenticationSuccessHandler implements Authenticat
                 request.getHeader(AuthConstants.Headers.USER_AGENT),
                 AuthUtils.getClientIpAddress(request));
 
-        ResponseCookie accessTokenCookie = cookiesCreator.createAccessTokenCookie(accessAndRefreshTokens.getLeft());
-        ResponseCookie refreshTokenCookie = cookiesCreator.createRefreshTokenCookie(accessAndRefreshTokens.getRight());
+        Cookie accessTokenCookie = cookiesCreator.createAccessTokenCookie(accessAndRefreshTokens.getLeft());
+        Cookie refreshTokenCookie = cookiesCreator.createRefreshTokenCookie(accessAndRefreshTokens.getRight());
 
-        response.addHeader(HttpHeaders.SET_COOKIE, accessTokenCookie.toString());
-        response.addHeader(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString());
+        response.addCookie(accessTokenCookie);
+        response.addCookie(refreshTokenCookie);
 
         if (!authenticatedUser.isRegistered()) {
             List<String> params = new ArrayList<>();
