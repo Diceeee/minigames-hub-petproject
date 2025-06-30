@@ -1,6 +1,7 @@
 package com.dice.auth.core;
 
 import com.dice.auth.AuthConstants;
+import com.dice.auth.core.access.Roles;
 import com.dice.auth.core.properties.AuthConfigurationProperties;
 import com.dice.auth.email.EmailOrUsernameAndPasswordAuthenticationFilter;
 import com.dice.auth.email.EmailPasswordAuthenticationProvider;
@@ -89,9 +90,10 @@ public class SecurityConfiguration {
                                 authorizeRequests
                                         .requestMatchers("/css/**", "/js/**", "/images/**", "/favicon.ico",
                                                 AuthConstants.Uris.REGISTER,
-                                                AuthConstants.Uris.REGISTER + "/continue")
+                                                AuthConstants.Uris.REGISTER + "/continue",
+                                                "/email/verification/**")
                                         .permitAll()
-                                        .anyRequest().authenticated())
+                                        .anyRequest().hasAnyRole(Roles.USER.getRoleWithoutPrefix(), Roles.ADMIN.getRoleWithoutPrefix()))
                 .authenticationProvider(emailPasswordAuthenticationProvider)
                 .userDetailsService(userDetailsService)
                 .formLogin(configurer -> configurer

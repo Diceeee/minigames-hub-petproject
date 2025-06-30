@@ -1,16 +1,26 @@
 package com.dice.auth.registration;
 
 import com.dice.auth.AuthConstants;
+import com.dice.auth.CookiesCreator;
 import com.dice.auth.core.util.AuthUtils;
+import com.dice.auth.user.UserService;
+import com.dice.auth.user.dto.User;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 @Slf4j
 @Validated
@@ -20,42 +30,62 @@ import org.springframework.web.bind.annotation.*;
 public class RegistrationController {
 
     private final RegistrationService registrationService;
+    private final CookiesCreator cookiesCreator;
+    private final UserService userService;
 
-    /**
-     * Client does not always save cookies immediately after they are set, it must end redirection chain first cause tokens cookies are Strict secured.
-     * So for this scenario, this endpoint is needed to manually send pre-saved registration data, as example after login via external provider as Google.
-     */
-    @GetMapping(path = "/continue")
-    public String registrationContinue(@RequestParam(value = "email", required = false) String email,
-                                       @RequestParam(value = "nickname", required = false) String nickname,
-                                       @RequestParam(value = "username", required = false) String username,
-                                       Model model) {
+    @GetMapping
+    public String registration(Authentication authentication, Model model) {
+        if (authentication == null || !authentication.isAuthenticated()) {
+            model.addAttribute("context", "regular");
+            return "register";
+        }
 
-        if (email != null) {
-            model.addAttribute("email", email);
-        }
-        if (nickname != null) {
-            model.addAttribute("nickname", nickname);
-        }
-        if (username != null) {
-            model.addAttribute("username", username);
-        }
+        Jwt jwt = (Jwt) authentication.getPrincipal();
+        Long userId = Long.valueOf(jwt.getSubject());
+
+        User user = userService.getUserById(userId);
+        model.addAttribute("user", user);
+        model.addAttribute("context", "oauth2");
 
         return "register";
     }
 
-    @GetMapping
-    public String registrationPage() {
-        return "register";
+    @PostMapping("cancel")
+    public String cancel(Authentication authentication, HttpServletResponse response) {
+        if (authentication != null) {
+            Cookie accessTokenCookie = cookiesCreator.getDeletedAccessTokenCookie();
+            Cookie refreshTokenCookie = cookiesCreator.getDeletedRefreshTokenCookie();
+
+            response.addCookie(accessTokenCookie);
+            response.addCookie(refreshTokenCookie);
+        }
+
+        return "redirect:" + AuthConstants.Uris.LOGIN;
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-    public String processRegistration(@ModelAttribute @Valid RegistrationDto registration, HttpServletRequest httpServletRequest) {
-        RegistrationResult registrationResult = registrationService.register(registration);
-        if (registrationResult.isSuccessful()) {
-            return "redirect:" + AuthConstants.Uris.HOME;
-        } else {
-            return "redirect:" + AuthUtils.getOriginalUrl(httpServletRequest) + "&error=" + registrationResult.getErrorId();
+    public String processRegistration(@ModelAttribute @Valid RegistrationDto registration, HttpServletRequest httpServletRequest,
+                                      HttpServletResponse response, Authentication authentication) {
+        try {
+            RegistrationResult registrationResult = registrationService.register(registration);
+
+            if (registrationResult.isSuccessful()) {
+                if (registrationResult.getUpdatedAccessToken() != null) {
+                    Cookie accessTokenCookie = cookiesCreator.createAccessTokenCookie(registrationResult.getUpdatedAccessToken());
+                    response.addCookie(accessTokenCookie);
+                }
+
+                if (registrationResult.getRegisteredUser().isEmailVerified()) {
+                    return "redirect:" + AuthConstants.Uris.HOME;
+                } else {
+                    return "verify-email";
+                }
+            } else {
+                return "redirect:" + AuthUtils.getOriginalUrl(httpServletRequest) + "&error=" + registrationResult.getErrorId();
+            }
+        } catch (Exception e) {
+            System.out.println(e);
+            throw e;
         }
     }
 }

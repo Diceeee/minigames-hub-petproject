@@ -13,6 +13,7 @@ public class AuthConfigurationProperties {
     Integer refreshWindowInMinutes;
     Integer refreshTokenExpirationInDays;
     Integer accessTokenExpirationInMinutes;
+    Integer verificationEmailRateLimitInMinutesPerUser;
 
     String rsaKeyId;
     String issuerName;
@@ -23,10 +24,12 @@ public class AuthConfigurationProperties {
 
     @ConstructorBinding
     public AuthConfigurationProperties(Integer refreshWindowInMinutes, Integer refreshTokenExpirationInDays, Integer accessTokenExpirationInMinutes,
-                                       String rsaKeyId, String issuerName, Boolean trustProxyHeaders, Boolean preferExternalIp) {
+                                       Integer verificationEmailRateLimitInMinutesPerUser, String rsaKeyId, String issuerName,
+                                       Boolean trustProxyHeaders, Boolean preferExternalIp) {
         this.refreshWindowInMinutes = refreshWindowInMinutes == null ? 5 : refreshWindowInMinutes;
         this.refreshTokenExpirationInDays = refreshTokenExpirationInDays == null ? 60 : refreshTokenExpirationInDays;
         this.accessTokenExpirationInMinutes = accessTokenExpirationInMinutes == null ? 30 : accessTokenExpirationInMinutes;
+        this.verificationEmailRateLimitInMinutesPerUser = verificationEmailRateLimitInMinutesPerUser == null ? 5 : verificationEmailRateLimitInMinutesPerUser;
 
         this.rsaKeyId = rsaKeyId == null ? "authKeyId" : rsaKeyId;
         this.issuerName = issuerName == null ? "minigames-hub" : issuerName;

@@ -1,12 +1,14 @@
 package com.dice.auth.user.dto;
 
 import lombok.Builder;
+import lombok.Singular;
+import lombok.ToString;
 import lombok.Value;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.ArrayList;
+import java.time.Instant;
 import java.util.Collection;
 import java.util.List;
 
@@ -15,17 +17,17 @@ import java.util.List;
 public class User implements UserDetails {
 
     Long id;
+    @ToString.Exclude
     String password;
     String email;
     String username;
-    String nickname;
     boolean emailVerified;
-    @Builder.Default
-    List<String> authorities = new ArrayList<>();
+    Instant createdAt;
+    @Singular
+    List<String> authorities;
 
     String googleId;
     String facebookId;
-    String lastIssuedRefreshTokenId;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -38,7 +40,6 @@ public class User implements UserDetails {
     public boolean isRegistered() {
         return isEmailVerified()
                 && getEmail() != null
-                && getNickname() != null
                 && getUsername() != null
                 && getPassword() != null;
     }

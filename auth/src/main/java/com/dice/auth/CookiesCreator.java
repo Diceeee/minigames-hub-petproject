@@ -16,7 +16,7 @@ public class CookiesCreator {
         cookie.setHttpOnly(true);
         cookie.setSecure(false); // Set to true for HTTPS
         cookie.setPath("/");
-        cookie.setMaxAge((int) Duration.ofDays(1).getSeconds());
+        cookie.setMaxAge((int) Duration.ofDays(200).getSeconds());
         return cookie;
     }
 

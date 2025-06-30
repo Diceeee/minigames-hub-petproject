@@ -3,7 +3,7 @@
 ==== Common Registration Flow
 ===== Description
 . User opens registration page.
-. User enters: email, username, nickname, password.
+. User enters: email, username, password.
 ** Validate email: must be unique and must be email.
 ** Validate username: must be unique.
 . User gets to verify email page.
@@ -16,7 +16,7 @@
 . User redirected to registration page.
 . User has already filled data:
 ** Email
-. User enters: username, nickname, password.
+. User enters: username, password.
 ** Validate username: must be unique.
 . User is registered and can log in.
 

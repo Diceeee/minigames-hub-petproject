@@ -6,9 +6,7 @@
 <h2>Hello!</h2>
 <h3>Id: <span th:text="${user.id}"></span></h3>
 <h3>Username: <span th:text="${user.username}"></span></h3>
-<h3>Nickname: <span th:text="${user.nickname}"></span></h3>
 <h3>Email: <span th:text="${user.email}"></span></h3>
-
 
 <form th:action="@{/refresh/logout}" method="post">
     <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />

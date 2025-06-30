@@ -8,11 +8,17 @@
 
     <changeSet id="email-verification" author="Yaro">
         <createTable schemaName="public" tableName="email_verification_token">
-            <column name="id" type="VARCHAR(128)">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints nullable="false" unique="true" primaryKey="true"/>
+            </column>
+            <column name="token_id" type="VARCHAR(128)">
                 <constraints nullable="false" unique="true"/>
             </column>
             <column name="user_id" type="BIGINT">
                 <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="created_at" type="TIMESTAMP">
+                <constraints nullable="false"/>
             </column>
         </createTable>
 
@@ -29,6 +35,9 @@
         <!-- Add index on user_id for better performance -->
         <createIndex schemaName="public" tableName="email_verification_token" indexName="idx_email_verification_token_user_id">
             <column name="user_id"/>
+        </createIndex>
+        <createIndex schemaName="public" tableName="email_verification_token" indexName="idx_email_verification_token_token_id">
+            <column name="token_id"/>
         </createIndex>
     </changeSet>
 </databaseChangeLog>

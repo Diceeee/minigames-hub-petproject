@@ -3,6 +3,7 @@ package com.dice.auth.user;
 import com.dice.auth.user.dto.User;
 import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -16,6 +17,7 @@ import java.util.List;
 )
 public interface UserMapper {
 
+    @Mapping(target = "authority", ignore = true)
     User mapUserEntity(UserEntity entity);
 
     @BeanMapping(ignoreUnmappedSourceProperties = {"accountNonExpired", "accountNonLocked", "credentialsNonExpired", "enabled", "registered"})

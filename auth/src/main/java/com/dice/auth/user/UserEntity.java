@@ -4,7 +4,9 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
+import java.time.Instant;
 import java.util.List;
 
 
@@ -36,6 +38,7 @@ public class UserEntity {
     /**
      * User's hashed password.
      */
+    @ToString.Exclude
     private String password;
     /**
      * Username means internal account name that is hidden for other users
@@ -43,22 +46,16 @@ public class UserEntity {
     @Column(unique = true)
     private String username;
     /**
-     * Nickname is external name that is used as public user's name.
-     */
-    private String nickname;
-    /**
      * User's email.
      */
     @Column(unique = true)
     private String email;
+    @Column(name = "created_at", nullable = false)
+    private Instant createdAt;
     /**
      * Indicates that user's email is verified.
      */
     private boolean emailVerified;
-    /**
-     * Last issued refresh token id that was generated for user. Used to validate that provided refresh token by user is correct and used now for security.
-     */
-    private String lastIssuedRefreshTokenId;
     /**
      * User's authorities
      */

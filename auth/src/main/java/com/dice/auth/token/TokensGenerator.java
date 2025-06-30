@@ -47,13 +47,13 @@ public class TokensGenerator {
      * uses additional logical validation of refresh tokens and sessions before generating new tokens.
      *
      * @param providedRefreshToken Provided refresh token
-     * @param userAgent    User's agent from UA header
-     * @param ipAddress    Request IP address
+     * @param userAgent            User's agent from UA header
+     * @param ipAddress            Request IP address
      * @return Pair of access token (left) and refresh token (right)
      * @throws JOSEException If refresh token parsing is failed
      */
     @Transactional(isolation = Isolation.READ_COMMITTED)
-    public Pair<String, String> generateForRefresh(String providedRefreshToken, String userAgent, String ipAddress) throws JOSEException {
+    public Pair<String, String> generateTokensForRefreshToken(String providedRefreshToken, String userAgent, String ipAddress) throws JOSEException {
         Jws<Claims> parsedRefreshToken = tokensParser.parseToken(providedRefreshToken);
         RefreshTokenSession refreshTokenSession = refreshTokenSessionService.getByTokenId(parsedRefreshToken.getPayload().getId());
         Long userId = Long.valueOf(parsedRefreshToken.getPayload().getSubject());
@@ -88,16 +88,16 @@ public class TokensGenerator {
                 .compact();
 
         refreshTokenSessionService.save(refreshTokenSession.toBuilder()
-                        .tokenId(refreshTokenId)
-                        .createdAt(refreshTokenIssuedAt.toInstant())
-                        .expiresAt(refreshTokenExpiration.toInstant())
-                        .ipAddress(ipAddress)
-                        .build());
+                .tokenId(refreshTokenId)
+                .createdAt(refreshTokenIssuedAt.toInstant())
+                .expiresAt(refreshTokenExpiration.toInstant())
+                .ipAddress(ipAddress)
+                .build());
 
         return Pair.of(accessToken, refreshToken);
     }
 
-    public Pair<String, String> generateForLogin(User user, String userAgent, String ipAddress) throws JOSEException {
+    public Pair<String, String> generateTokensForUser(User user, String userAgent, String ipAddress) throws JOSEException {
         String refreshTokenId = UUID.randomUUID().toString();
         Date refreshTokenIssuedAt = jjwtClock.now();
         Date refreshTokenExpiration = Date.from(clock.instant().plus(authProperties.getRefreshTokenExpirationInDays(), ChronoUnit.DAYS));
@@ -138,6 +138,31 @@ public class TokensGenerator {
                 .build());
 
         return Pair.of(accessToken, refreshToken);
+    }
+
+    /**
+     * May be used to actualize access token for user in case of some changes,
+     * as example when user authorities were changed.
+     */
+    public String generateAccessTokenForUser(User user) {
+        try {
+            RSAKey key = rsaKeyProvider.getRsaKey();
+
+            return Jwts.builder()
+                    .id(UUID.randomUUID().toString())
+                    .issuer(authProperties.getIssuerName())
+                    .issuedAt(jjwtClock.now())
+                    .expiration(Date.from(clock.instant().plus(authProperties.getAccessTokenExpirationInMinutes(), ChronoUnit.MINUTES)))
+                    .signWith(key.toPrivateKey())
+                    .subject(user.getId().toString())
+                    .claim(AuthConstants.Claims.AUTHORITIES, user.getAuthorities().stream()
+                            .map(GrantedAuthority::getAuthority)
+                            .collect(Collectors.joining(";")))
+                    .compact();
+        } catch (Exception e) {
+            log.error("Unexpected error while generating access token for user {}", user, e);
+            throw new RuntimeException(e);
+        }
     }
 
     private void validateRefreshToken(Jws<Claims> parsedProvidedRefreshToken, RefreshTokenSession refreshTokenSession,

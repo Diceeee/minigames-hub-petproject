@@ -57,4 +57,14 @@ logging:
     org.springframework.security.oauth2: DEBUG
     org.springframework.security.oauth2.server.authorization: DEBUG
     org.hibernate.cfg: DEBUG
+    org.springframework.transaction: DEBUG
     org.hibernate.boot.model.naming: DEBUG
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "health,info,loggers,beans"
+  endpoint:
+    health:
+      show-details: ALWAYS

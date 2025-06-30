@@ -1,13 +1,23 @@
 package com.dice.auth.email.verification;
 
+import com.dice.auth.core.access.Roles;
+import com.dice.auth.core.properties.AuthConfigurationProperties;
+import com.dice.auth.email.verification.exception.EmailWasNotSentException;
 import com.dice.auth.user.UserService;
 import com.dice.auth.user.dto.User;
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Clock;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -16,15 +26,17 @@ import java.util.UUID;
 @AllArgsConstructor
 public class EmailVerificationService {
 
+    private final Clock clock;
     private final UserService userService;
+    private final JavaMailSender javaMailSender;
+    private final AuthConfigurationProperties authProperties;
     private final EmailVerificationTokenRepository emailVerificationTokenRepository;
 
-    @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
-    public boolean verifyEmail(String tokenId) {
-        Optional<EmailVerificationTokenEntity> emailVerificationTokenOpt = emailVerificationTokenRepository.findById(tokenId);
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public void verifyEmail(String tokenId) {
+        Optional<EmailVerificationTokenEntity> emailVerificationTokenOpt = emailVerificationTokenRepository.findByTokenId(tokenId);
         if (emailVerificationTokenOpt.isEmpty()) {
-            log.warn("Email verification for token id '{}' not successful because token is missing", tokenId);
-            return false;
+            log.info("Email verification for token id '{}' not successful because token is not found", tokenId);
         }
 
         EmailVerificationTokenEntity emailVerificationToken = emailVerificationTokenOpt.get();
@@ -32,26 +44,78 @@ public class EmailVerificationService {
 
         if (user.isEmailVerified()) {
             log.warn("Email verification for token id '{}' not successful because user '{}' already has verified email", tokenId, user.getId());
-            return false;
         }
 
         userService.save(user.toBuilder()
+                .authority(Roles.USER.getRoleWithPrefix())
                 .emailVerified(true)
                 .build());
 
         emailVerificationTokenRepository.deleteById(emailVerificationToken.getId());
-
-        return true;
     }
 
-    @Transactional(isolation = Isolation.READ_COMMITTED)
-    public String createOrRecreateEmailVerificationTokenForUser(Long userId) {
+    @Transactional(isolation = Isolation.READ_COMMITTED, rollbackFor = EmailWasNotSentException.class)
+    public void createOrRecreateEmailVerificationTokenForUser(Long userId) {
         User user = userService.getUserById(userId);
         if (user.isEmailVerified()) {
             throw new IllegalArgumentException(String.format("User %d already has verified email!", user.getId()));
         }
 
-        String tokenId = UUID.randomUUID().toString();
-        return emailVerificationTokenRepository.save(new EmailVerificationTokenEntity(tokenId, user.getId())).getId();
+        Optional<EmailVerificationTokenEntity> emailVerificationTokenOpt = emailVerificationTokenRepository.findByUserId(userId);
+        if (emailVerificationTokenOpt.isPresent()) {
+            EmailVerificationTokenEntity verificationToken = emailVerificationTokenOpt.get();
+            handleExistingVerificationToken(user, verificationToken);
+        } else {
+            String newTokenId = UUID.randomUUID().toString();
+            emailVerificationTokenRepository.save(new EmailVerificationTokenEntity(
+                    newTokenId, userId, clock.instant()
+            ));
+            sendVerificationEmail(user, newTokenId);
+        }
+    }
+
+    private void handleExistingVerificationToken(User user, EmailVerificationTokenEntity emailVerificationToken) {
+        Instant now = clock.instant();
+        Instant allowedForRecreationAfter = now.plus(authProperties.getVerificationEmailRateLimitInMinutesPerUser(), ChronoUnit.MINUTES);
+
+        if (emailVerificationToken.getCreatedAt().isAfter(allowedForRecreationAfter)) {
+            String newTokenId = UUID.randomUUID().toString();
+            emailVerificationTokenRepository.save(new EmailVerificationTokenEntity(
+                    emailVerificationToken.getId(), newTokenId, emailVerificationToken.getUserId(), now
+            ));
+
+            sendVerificationEmail(user, newTokenId);
+        }
+    }
+
+    private void sendVerificationEmail(User user, String tokenId) throws EmailWasNotSentException {
+        try {
+            String emailHtmlText = String.format("""
+                    <html>
+                      <body>
+                        <p>Hello,</p>
+                        <p>Please confirm your email by clicking the button below:</p>
+                        <a href="http://localhost:5000/email/verification/%s"
+                           style="display: inline-block; padding: 12px 24px; font-size: 16px; color: #fff; background-color: #007bff; text-decoration: none; border-radius: 4px;">
+                          Confirm Email
+                        </a>
+                        <p>If you did not request this, you can ignore this email.</p>
+                      </body>
+                    </html>
+                    """, tokenId);
+
+            MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+            MimeMessageHelper messageHelper = new MimeMessageHelper(mimeMessage);
+            messageHelper.setTo(user.getEmail());
+            messageHelper.setSubject("Verify email");
+            messageHelper.setText(emailHtmlText, true);
+
+            javaMailSender.send(messageHelper.getMimeMessage());
+        } catch (MessagingException e) {
+            String message = String.format("Couldn't send verification email for user %d to email %s",
+                    user.getId(), user.getEmail());
+            log.error(message, e);
+            throw new EmailWasNotSentException(message);
+        }
     }
 }

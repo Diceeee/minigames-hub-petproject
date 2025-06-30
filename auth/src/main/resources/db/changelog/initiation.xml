@@ -15,11 +15,12 @@
                 <constraints nullable="false"/>
             </column>
             <column name="username" type="VARCHAR(64)"/>
-            <column name="nickname" type="VARCHAR(64)"/>
             <column name="google_id" type="VARCHAR(64)"/>
             <column name="facebook_id" type="VARCHAR(64)"/>
             <column name="password" type="VARCHAR(128)"/>
-            <column name="last_issued_refresh_token_id" type="VARCHAR(128)"/>
+            <column name="created_at" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
             <column name="email_verified" type="BOOLEAN" defaultValueBoolean="false"/>
         </createTable>
 

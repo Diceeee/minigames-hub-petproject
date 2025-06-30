@@ -8,6 +8,7 @@ import lombok.Value;
 @Builder
 public class RegistrationResult {
 
+    String updatedAccessToken;
     User registeredUser;
     boolean isSuccessful;
     String errorId;

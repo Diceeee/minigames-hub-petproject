@@ -11,8 +11,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -44,7 +42,7 @@ public class RefreshTokenController {
                 return "redirect:" + AuthConstants.Uris.LOGIN;
             }
 
-            Pair<String, String> accessAndRefreshTokens = tokensGenerator.generateForRefresh(refreshToken, userAgent, AuthUtils.getClientIpAddress(request));
+            Pair<String, String> accessAndRefreshTokens = tokensGenerator.generateTokensForRefreshToken(refreshToken, userAgent, AuthUtils.getClientIpAddress(request));
             
             Cookie accessTokenCookie = cookiesCreator.createAccessTokenCookie(accessAndRefreshTokens.getLeft());
             Cookie refreshTokenCookie = cookiesCreator.createRefreshTokenCookie(accessAndRefreshTokens.getRight());

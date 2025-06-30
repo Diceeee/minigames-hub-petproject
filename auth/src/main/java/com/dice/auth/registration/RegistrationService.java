@@ -1,19 +1,32 @@
 package com.dice.auth.registration;
 
+import com.dice.auth.core.access.Roles;
+import com.dice.auth.email.verification.EmailVerificationService;
+import com.dice.auth.token.TokensGenerator;
 import com.dice.auth.user.UserService;
 import com.dice.auth.user.dto.User;
 import com.dice.auth.user.exception.UserNotFoundException;
 import lombok.AllArgsConstructor;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.Clock;
+import java.util.List;
+import java.util.stream.Stream;
 
 @Service
 @AllArgsConstructor
 public class RegistrationService {
 
+    private final Clock clock;
     private final UserService userService;
+    private final TokensGenerator tokensGenerator;
     private final PasswordEncoder passwordEncoder;
+    private final EmailVerificationService emailVerificationService;
 
+    @Transactional
     public RegistrationResult register(RegistrationDto registration) {
         try {
             User user = userService.getUserByEmail(registration.getEmail());
@@ -26,30 +39,35 @@ public class RegistrationService {
 
             User registeredUser = userService.save(user.toBuilder()
                     .username(registration.getUsername())
-                    .nickname(registration.getNickname())
                     .password(passwordEncoder.encode(registration.getPassword()))
+                    .authority(Roles.USER.getRoleWithPrefix())
                     .build());
             registration.setPassword(null);
 
             return RegistrationResult.builder()
                     .isSuccessful(true)
+                    .updatedAccessToken(tokensGenerator.generateAccessTokenForUser(registeredUser))
                     .registeredUser(registeredUser)
                     .build();
         } catch (UserNotFoundException e) {
             User user = User.builder()
                     .username(registration.getUsername())
-                    .nickname(registration.getNickname())
                     .email(registration.getEmail())
-                    // todo: change to false when email verification feature is implemented
-                    .emailVerified(true)
+                    .createdAt(clock.instant())
+                    .emailVerified(false)
                     .password(passwordEncoder.encode(registration.getPassword()))
                     .build();
 
             User registeredUser = userService.save(user);
+            emailVerificationService.createOrRecreateEmailVerificationTokenForUser(registeredUser.getId());
+
             return RegistrationResult.builder()
                     .isSuccessful(true)
                     .registeredUser(registeredUser)
                     .build();
+        } catch (Exception e) {
+            System.out.println(e);
+            throw e;
         }
     }
 }

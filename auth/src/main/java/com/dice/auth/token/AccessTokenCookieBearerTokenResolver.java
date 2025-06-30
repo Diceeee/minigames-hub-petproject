@@ -25,7 +25,7 @@ public class AccessTokenCookieBearerTokenResolver implements BearerTokenResolver
                     if (isAccessTokenValid(token)) {
                         return token;
                     } else {
-                        log.warn("Token signature is invalid: {}", token);
+                        log.info("Access token is invalid: {}", token);
                     }
                 }
             }

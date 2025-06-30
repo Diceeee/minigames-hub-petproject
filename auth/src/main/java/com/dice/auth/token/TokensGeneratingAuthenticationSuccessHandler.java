@@ -24,10 +24,7 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
+import java.time.Clock;
 
 /**
  * Handles successful authentications in application and assigns to users access and refresh tokens.
@@ -41,6 +38,7 @@ public class TokensGeneratingAuthenticationSuccessHandler implements Authenticat
     private final TokensGenerator tokensGenerator;
     private final CookiesCreator cookiesCreator;
     private final UserService userService;
+    private final Clock clock;
 
     @SneakyThrows
     @Override
@@ -61,7 +59,7 @@ public class TokensGeneratingAuthenticationSuccessHandler implements Authenticat
 
     private void handleAuthenticationToken(HttpServletRequest request, HttpServletResponse response, AbstractAuthenticationToken authenticationToken) throws JOSEException, IOException {
         User authenticatedUser = getUserByToken(authenticationToken);
-        Pair<String, String> accessAndRefreshTokens = tokensGenerator.generateForLogin(authenticatedUser,
+        Pair<String, String> accessAndRefreshTokens = tokensGenerator.generateTokensForUser(authenticatedUser,
                 request.getHeader(AuthConstants.Headers.USER_AGENT),
                 AuthUtils.getClientIpAddress(request));
 
@@ -72,25 +70,9 @@ public class TokensGeneratingAuthenticationSuccessHandler implements Authenticat
         response.addCookie(refreshTokenCookie);
 
         if (!authenticatedUser.isRegistered()) {
-            List<String> params = new ArrayList<>();
-            if (authenticatedUser.getUsername() != null) {
-                params.add(String.format("%s=%s&", "username", URLEncoder.encode(authenticatedUser.getUsername(), StandardCharsets.UTF_8)));
-            }
-            if (authenticatedUser.getNickname() != null) {
-                params.add(String.format("%s=%s&", "nickname", URLEncoder.encode(authenticatedUser.getNickname(), StandardCharsets.UTF_8)));
-            }
-            if (authenticatedUser.getEmail() != null) {
-                params.add(String.format("%s=%s", "email", URLEncoder.encode(authenticatedUser.getEmail(), StandardCharsets.UTF_8)));
-            }
-
-            String encodedParams = String.join("&", params);
-            String continueRegistrationRedirectionUri = String.format("%s/continue?%s",
-                    AuthConstants.Uris.REGISTER,
-                    encodedParams);
-
-            response.sendRedirect(continueRegistrationRedirectionUri);
+            response.sendRedirect(AuthConstants.Uris.REGISTER);
         } else {
-            response.sendRedirect("/");
+            response.sendRedirect(AuthConstants.Uris.HOME);
         }
     }
 
@@ -119,8 +101,9 @@ public class TokensGeneratingAuthenticationSuccessHandler implements Authenticat
         if (oAuth2AuthenticationToken.getAuthorizedClientRegistrationId().equals(GOOGLE_OAUTH2_ID)) {
             User user = User.builder()
                     .googleId(oidcUser.getSubject())
-                    .nickname(oidcUser.getGivenName())
+                    .username(oidcUser.getGivenName())
                     .email(oidcUser.getEmail())
+                    .createdAt(clock.instant())
                     .emailVerified(oidcUser.getEmailVerified())
                     .build();
 

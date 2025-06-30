@@ -1,11 +1,6 @@
-1. Email verification
-2. Google account bind
-3. Registration
-4. Refresh token implementation (DONE)
-5. Users stored in DB
-6. User's authorities (optional)
-7. Users' tokens must have his authorities
-8. Extract some important configs/constants to properties or, at least, constants separate class(es)
-9. Add validation on input and db-saves
-
-10. Remove refresh-token on logout
+30.06.2025:
+1) Extract RSA key to some persistent storage or as file to not generate it for each app start.
+2) Finish email verification
+3) Finish registration
+    a) Remove continue endpoint and use tokens approach to pre-save data for OAuth2 login.
+4) Add validation on inputs

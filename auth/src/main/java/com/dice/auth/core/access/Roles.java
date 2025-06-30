@@ -1,14 +1,23 @@
 package com.dice.auth.core.access;
 
-public interface Roles {
+import lombok.AllArgsConstructor;
 
-    /**
-     * Common verified user role that has basic access in application
-     */
-    String USER = "USER";
+@AllArgsConstructor
+public enum Roles {
 
-    /**
-     * Admin user role
-     */
-    String ADMIN = "ADMIN";
+    USER, ADMIN;
+
+    String roleName;
+
+    Roles() {
+        this.roleName = name();
+    }
+
+    public String getRoleWithoutPrefix() {
+        return roleName;
+    }
+
+    public String getRoleWithPrefix() {
+        return "ROLE_" + getRoleWithoutPrefix();
+    }
 }

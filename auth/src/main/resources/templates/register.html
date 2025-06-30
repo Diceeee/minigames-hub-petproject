@@ -11,16 +11,12 @@
     <div class="login-title">Sign Up</div>
     <form th:action="@{/register}" method="post" class="login-form">
         <div>
-            <label for="email">Email</label>
-            <input id="email" name="email" th:readonly="${not #strings.isEmpty(email)}" th:value="${email}" type="email" placeholder="Enter your email" required>
+            <label th:hidden="${context == 'oauth2'}" for="email">Email</label>
+            <input id="email" name="email" th:hidden="${context == 'oauth2'}" th:readonly="${not #strings.isEmpty(user?.email)}" th:value="${user?.email == null ? '' : user.email}" type="email" placeholder="Enter your email" required>
         </div>
         <div>
-            <label for="username">Username - your private account name</label>
-            <input id="username" name="username" th:value="${username}" type="text" placeholder="Enter your username" required>
-        </div>
-        <div>
-            <label for="nickname">Nickname - your public account name (visible for other users)</label>
-            <input id="nickname" name="nickname" th:value="${nickname}" type="text" placeholder="Enter your nickname" required>
+            <label for="username">Username</label>
+            <input id="username" name="username" th:value="${user?.username}" type="text" placeholder="Enter your username" required>
         </div>
         <div>
             <label for="password">Password</label>
@@ -39,7 +35,12 @@
     </div>
 
     <div class="divider">or</div>
-    <div style="text-align:center;">
+
+    <form th:action="@{/register/cancel}" method="post" class="login-form">
+        <button type="submit">Cancel registration</button>
+    </form>
+
+    <div style="text-align:center;" th:if="${context != 'oauth2'}">
         <a href="/login">Already have an account? Login</a>
     </div>
 </div>
