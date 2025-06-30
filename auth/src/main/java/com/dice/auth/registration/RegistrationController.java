@@ -2,11 +2,9 @@ package com.dice.auth.registration;
 
 import com.dice.auth.AuthConstants;
 import com.dice.auth.CookiesCreator;
-import com.dice.auth.core.util.AuthUtils;
 import com.dice.auth.user.UserService;
 import com.dice.auth.user.dto.User;
 import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -64,28 +62,21 @@ public class RegistrationController {
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-    public String processRegistration(@ModelAttribute @Valid RegistrationDto registration, HttpServletRequest httpServletRequest,
-                                      HttpServletResponse response, Authentication authentication) {
-        try {
-            RegistrationResult registrationResult = registrationService.register(registration);
-
-            if (registrationResult.isSuccessful()) {
-                if (registrationResult.getUpdatedAccessToken() != null) {
-                    Cookie accessTokenCookie = cookiesCreator.createAccessTokenCookie(registrationResult.getUpdatedAccessToken());
-                    response.addCookie(accessTokenCookie);
-                }
-
-                if (registrationResult.getRegisteredUser().isEmailVerified()) {
-                    return "redirect:" + AuthConstants.Uris.HOME;
-                } else {
-                    return "verify-email";
-                }
-            } else {
-                return "redirect:" + AuthUtils.getOriginalUrl(httpServletRequest) + "&error=" + registrationResult.getErrorId();
+    public String processRegistration(@ModelAttribute @Valid RegistrationDto registration, HttpServletResponse response) {
+        RegistrationResult registrationResult = registrationService.register(registration);
+        if (registrationResult.isSuccessful()) {
+            if (registrationResult.getUpdatedAccessToken() != null) {
+                Cookie accessTokenCookie = cookiesCreator.createAccessTokenCookie(registrationResult.getUpdatedAccessToken());
+                response.addCookie(accessTokenCookie);
             }
-        } catch (Exception e) {
-            System.out.println(e);
-            throw e;
+
+            if (registrationResult.getRegisteredUser().isEmailVerified()) {
+                return "redirect:" + AuthConstants.Uris.HOME;
+            } else {
+                return "verify-email";
+            }
+        } else {
+            return "redirect:" + AuthConstants.Uris.REGISTER + "?error=" + registrationResult.getErrorId();
         }
     }
 }

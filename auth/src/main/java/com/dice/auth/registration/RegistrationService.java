@@ -7,14 +7,11 @@ import com.dice.auth.user.UserService;
 import com.dice.auth.user.dto.User;
 import com.dice.auth.user.exception.UserNotFoundException;
 import lombok.AllArgsConstructor;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Clock;
-import java.util.List;
-import java.util.stream.Stream;
 
 @Service
 @AllArgsConstructor
@@ -37,6 +34,14 @@ public class RegistrationService {
                         .build();
             }
 
+            if (user.getUsername() != null && !user.getUsername().equals(registration.getUsername())
+                    && userService.userExistWithUsername(registration.getUsername())) {
+                return RegistrationResult.builder()
+                        .isSuccessful(false)
+                        .errorId("duplicate_username")
+                        .build();
+            }
+
             User registeredUser = userService.save(user.toBuilder()
                     .username(registration.getUsername())
                     .password(passwordEncoder.encode(registration.getPassword()))
@@ -50,6 +55,13 @@ public class RegistrationService {
                     .registeredUser(registeredUser)
                     .build();
         } catch (UserNotFoundException e) {
+            if (userService.userExistWithUsername(registration.getUsername())) {
+                return RegistrationResult.builder()
+                        .isSuccessful(false)
+                        .errorId("duplicate_username")
+                        .build();
+            }
+
             User user = User.builder()
                     .username(registration.getUsername())
                     .email(registration.getEmail())
@@ -65,9 +77,6 @@ public class RegistrationService {
                     .isSuccessful(true)
                     .registeredUser(registeredUser)
                     .build();
-        } catch (Exception e) {
-            System.out.println(e);
-            throw e;
         }
     }
 }

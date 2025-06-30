@@ -90,10 +90,7 @@ public class SecurityConfiguration {
                                                 "/email/verification/**",
                                                 AuthConstants.Uris.HOME)
                                         .permitAll()
-                                        .requestMatchers(AuthConstants.Uris.REGISTER,
-                                                AuthConstants.Uris.REGISTER + "/continue")
-                                        .not().hasAnyRole(Roles.USER.getRoleWithoutPrefix(), Roles.ADMIN.getRoleWithoutPrefix())
-                                        .requestMatchers(AuthConstants.Uris.REGISTER + "/cancel")
+                                        .requestMatchers(AuthConstants.Uris.REGISTER + "/**")
                                         .not().hasAnyRole(Roles.USER.getRoleWithoutPrefix(), Roles.ADMIN.getRoleWithoutPrefix())
                                         .anyRequest().hasAnyRole(Roles.USER.getRoleWithoutPrefix(), Roles.ADMIN.getRoleWithoutPrefix()))
                 .authenticationProvider(emailPasswordAuthenticationProvider)

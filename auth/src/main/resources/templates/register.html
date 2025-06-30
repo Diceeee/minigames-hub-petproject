@@ -27,11 +27,11 @@
         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
         <button type="submit">Register</button>
     </form>
-    <div th:if="${param.error}">
-        <p class="error-msg">Registration error! Please try again.</p>
+    <div th:if="${param.error != null && param.error[0] == 'already_registered'}">
+        <p class="error-msg">User already registered</p>
     </div>
-    <div th:if="${param.success}">
-        <p class="success-msg">Registration successful! You can now log in.</p>
+    <div th:if="${param.error != null && param.error[0] == 'duplicate_username'}">
+        <p class="error-msg">Please, choose another username, this one is busy :(</p>
     </div>
     <div class="divider">or</div>
     <form th:if="${context == 'oauth2'}" th:action="@{/register/cancel}" method="post" class="register-form">
