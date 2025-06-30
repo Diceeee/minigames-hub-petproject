@@ -26,6 +26,7 @@
     </developers>
     <modules>
         <module>auth</module>
+        <module>service-registry</module>
     </modules>
 
     <scm>
