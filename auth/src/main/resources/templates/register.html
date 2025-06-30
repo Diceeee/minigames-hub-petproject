@@ -2,14 +2,16 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Register</title>
+    <title>Register - Minigames Hub</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/css/login.css">
+    <link rel="stylesheet" href="/css/generic.css">
+    <link rel="stylesheet" href="/css/register.css">
 </head>
 <body>
-<div class="login-container">
-    <div class="login-title">Sign Up</div>
-    <form th:action="@{/register}" method="post" class="login-form">
+<div class="register-container">
+    <div class="logo"><a href="/">Minigames Hub</a></div>
+    <div class="register-title">Create Your Account</div>
+    <form th:action="@{/register}" method="post" class="register-form">
         <div>
             <label th:hidden="${context == 'oauth2'}" for="email">Email</label>
             <input id="email" name="email" th:hidden="${context == 'oauth2'}" th:readonly="${not #strings.isEmpty(user?.email)}" th:value="${user?.email == null ? '' : user.email}" type="email" placeholder="Enter your email" required>
@@ -25,22 +27,17 @@
         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
         <button type="submit">Register</button>
     </form>
-
     <div th:if="${param.error}">
-        <p style="color:red">Registration error! Please try again.</p>
+        <p class="error-msg">Registration error! Please try again.</p>
     </div>
-
     <div th:if="${param.success}">
-        <p style="color:green">Registration successful! You can now log in.</p>
+        <p class="success-msg">Registration successful! You can now log in.</p>
     </div>
-
     <div class="divider">or</div>
-
-    <form th:action="@{/register/cancel}" method="post" class="login-form">
+    <form th:if="${context == 'oauth2'}" th:action="@{/register/cancel}" method="post" class="register-form">
         <button type="submit">Cancel registration</button>
     </form>
-
-    <div style="text-align:center;" th:if="${context != 'oauth2'}">
+    <div class="login-link" th:if="${context != 'oauth2'}">
         <a href="/login">Already have an account? Login</a>
     </div>
 </div>

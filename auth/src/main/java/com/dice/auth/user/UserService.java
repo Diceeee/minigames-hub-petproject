@@ -32,6 +32,11 @@ public class UserService {
                 .orElseThrow(() -> UserNotFoundException.forUsername(username)));
     }
 
+    @Transactional(readOnly = true)
+    public boolean userExistWithUsername(String username) {
+        return userRepository.existsByUsername(username);
+    }
+
     public User save(User user) {
         return userMapper.mapUserEntity(userRepository.save(userMapper.mapUserToEntity(user)));
     }

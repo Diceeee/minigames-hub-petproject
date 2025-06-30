@@ -8,7 +8,6 @@ import com.dice.auth.email.EmailPasswordAuthenticationProvider;
 import com.dice.auth.token.AccessTokenCookieBearerTokenResolver;
 import com.dice.auth.token.TokensGeneratingAuthenticationSuccessHandler;
 import com.dice.auth.token.TokensLogoutHandler;
-import com.dice.auth.token.TokensParser;
 import com.dice.auth.token.refresh.RefreshAccessTokenRedirectionFilter;
 import com.dice.auth.token.refresh.RefreshValidator;
 import com.nimbusds.jose.jwk.JWKSet;
@@ -44,7 +43,6 @@ import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
-import java.time.Clock;
 import java.util.List;
 import java.util.Locale;
 
@@ -89,10 +87,14 @@ public class SecurityConfiguration {
                         authorizeRequests ->
                                 authorizeRequests
                                         .requestMatchers("/css/**", "/js/**", "/images/**", "/favicon.ico",
-                                                AuthConstants.Uris.REGISTER,
-                                                AuthConstants.Uris.REGISTER + "/continue",
-                                                "/email/verification/**")
+                                                "/email/verification/**",
+                                                AuthConstants.Uris.HOME)
                                         .permitAll()
+                                        .requestMatchers(AuthConstants.Uris.REGISTER,
+                                                AuthConstants.Uris.REGISTER + "/continue")
+                                        .not().hasAnyRole(Roles.USER.getRoleWithoutPrefix(), Roles.ADMIN.getRoleWithoutPrefix())
+                                        .requestMatchers(AuthConstants.Uris.REGISTER + "/cancel")
+                                        .not().hasAnyRole(Roles.USER.getRoleWithoutPrefix(), Roles.ADMIN.getRoleWithoutPrefix())
                                         .anyRequest().hasAnyRole(Roles.USER.getRoleWithoutPrefix(), Roles.ADMIN.getRoleWithoutPrefix()))
                 .authenticationProvider(emailPasswordAuthenticationProvider)
                 .userDetailsService(userDetailsService)

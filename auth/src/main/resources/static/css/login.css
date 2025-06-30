@@ -17,16 +17,16 @@ body {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
-  animation: fadeIn 1s;
+  margin: 3rem auto;
 }
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(30px);}
   to { opacity: 1; transform: translateY(0);}
 }
 .login-title {
-  font-size: 2rem;
+  font-size: 1.7rem;
   font-weight: 700;
-  color: #333;
+  color: #22223b;
   text-align: center;
   margin-bottom: 0.5rem;
 }
@@ -52,11 +52,11 @@ body {
   box-sizing: border-box;
 }
 .login-form input:focus {
-  border-color: #667eea;
+  border-color: #4f8cff;
   outline: none;
 }
 .login-form button {
-  background: #6c757d;
+  background: #4f8cff;
   color: #fff;
   border: none;
   padding: 0.75rem 1rem;
@@ -68,7 +68,7 @@ body {
   margin-top: 0.5rem;
 }
 .login-form button:hover {
-  background: #5a6268;
+  background: #22223b;
 }
 .divider {
   text-align: center;
@@ -106,19 +106,26 @@ body {
   box-sizing: border-box;
 }
 .google-btn:hover {
-  border: 1px solid #4285f4;
+  border: 1px solid #4f8cff;
   box-shadow: 0 4px 16px rgba(66, 133, 244, 0.15);
 }
 .google-icon {
   width: 22px;
   height: 22px;
   display: inline-block;
+  font-weight: bold;
+  font-size: 1.2rem;
+  color: #4f8cff;
 }
 .login-form > div {
   width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
+}
+.register-link {
+  text-align: center;
+  margin-top: 1rem;
 }
 @media (max-width: 480px) {
   .login-container {

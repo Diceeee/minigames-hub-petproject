@@ -19,7 +19,7 @@ public class RefreshTokenSessionService {
     private final RefreshTokenSessionMapper mapper;
     private final RefreshTokenSessionRepository refreshTokenSessionRepository;
 
-    @Transactional(readOnly = true)
+    @Transactional(readOnly = true, noRollbackFor = SessionAssociatedWithRefreshTokenNotFound.class)
     public RefreshTokenSession getByTokenId(String tokenId) throws SessionAssociatedWithRefreshTokenNotFound {
         return refreshTokenSessionRepository.findByTokenId(tokenId)
                 .map(mapper::mapEntity)

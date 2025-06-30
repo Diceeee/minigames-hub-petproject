@@ -4,3 +4,7 @@
 3) Finish registration
     a) Remove continue endpoint and use tokens approach to pre-save data for OAuth2 login.
 4) Add validation on inputs
+5) Auto-clear 'zombie' users
+6) Auto-clear expired email verification tokens
+7) Improve errors handling
+8) Deduplication of users names

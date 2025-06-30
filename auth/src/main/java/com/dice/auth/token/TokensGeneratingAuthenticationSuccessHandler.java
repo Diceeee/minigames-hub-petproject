@@ -98,18 +98,20 @@ public class TokensGeneratingAuthenticationSuccessHandler implements Authenticat
      */
     private User preRegisterUser(OAuth2AuthenticationToken oAuth2AuthenticationToken) {
         DefaultOidcUser oidcUser = (DefaultOidcUser) oAuth2AuthenticationToken.getPrincipal();
-        if (oAuth2AuthenticationToken.getAuthorizedClientRegistrationId().equals(GOOGLE_OAUTH2_ID)) {
-            User user = User.builder()
-                    .googleId(oidcUser.getSubject())
-                    .username(oidcUser.getGivenName())
-                    .email(oidcUser.getEmail())
-                    .createdAt(clock.instant())
-                    .emailVerified(oidcUser.getEmailVerified())
-                    .build();
+        User.UserBuilder userBuilder = User.builder()
+                .email(oidcUser.getEmail())
+                .createdAt(clock.instant())
+                .emailVerified(true);
 
-            return userService.save(user);
+        if (!userService.userExistWithUsername(oidcUser.getGivenName())) {
+            userBuilder.username(oidcUser.getGivenName());
+        }
+        if (oAuth2AuthenticationToken.getAuthorizedClientRegistrationId().equals(GOOGLE_OAUTH2_ID)) {
+            userBuilder.googleId(oidcUser.getSubject());
         } else {
             throw new UnsupportedOperationException("OAuth2 provider not supported!");
         }
+
+        return userService.save(userBuilder.build());
     }
 }

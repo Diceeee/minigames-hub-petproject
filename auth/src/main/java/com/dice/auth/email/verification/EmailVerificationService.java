@@ -33,10 +33,11 @@ public class EmailVerificationService {
     private final EmailVerificationTokenRepository emailVerificationTokenRepository;
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
-    public void verifyEmail(String tokenId) {
+    public EmailVerificationResult verifyEmail(String tokenId) {
         Optional<EmailVerificationTokenEntity> emailVerificationTokenOpt = emailVerificationTokenRepository.findByTokenId(tokenId);
         if (emailVerificationTokenOpt.isEmpty()) {
             log.info("Email verification for token id '{}' not successful because token is not found", tokenId);
+            return new EmailVerificationResult(null, false);
         }
 
         EmailVerificationTokenEntity emailVerificationToken = emailVerificationTokenOpt.get();
@@ -44,14 +45,16 @@ public class EmailVerificationService {
 
         if (user.isEmailVerified()) {
             log.warn("Email verification for token id '{}' not successful because user '{}' already has verified email", tokenId, user.getId());
+            return new EmailVerificationResult(null, false);
         }
 
-        userService.save(user.toBuilder()
+        User verifiedUser = userService.save(user.toBuilder()
                 .authority(Roles.USER.getRoleWithPrefix())
                 .emailVerified(true)
                 .build());
 
         emailVerificationTokenRepository.deleteById(emailVerificationToken.getId());
+        return new EmailVerificationResult(verifiedUser, true);
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED, rollbackFor = EmailWasNotSentException.class)
