@@ -30,10 +30,11 @@ public class JwtAuthenticationAsHeadersRequestsPropagatorFilter implements Globa
                 .map(Authentication::getPrincipal)
                 .filter(principal -> principal instanceof Jwt)
                 .cast(Jwt.class)
-                .flatMap(jwt -> {
-                    exchange.getRequest().mutate().header(Headers.USER_ID, jwt.getSubject()).build();
-                    return chain.filter(exchange);
-                })
+                .flatMap(jwt -> chain.filter(exchange.mutate()
+                        .request(exchange.getRequest().mutate()
+                                .header(Headers.USER_ID, jwt.getSubject()).
+                                build())
+                        .build()))
                 .switchIfEmpty(chain.filter(exchange));
     }
 

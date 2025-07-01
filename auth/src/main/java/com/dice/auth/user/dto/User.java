@@ -1,5 +1,6 @@
 package com.dice.auth.user.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Builder;
 import lombok.Singular;
 import lombok.ToString;
@@ -14,6 +15,7 @@ import java.util.List;
 
 @Value
 @Builder(toBuilder = true)
+@JsonIgnoreProperties(value = {"password", "googleId", "facebookId", "accountNonLocked", "accountNonExpired", "credentialsNonExpired", "enabled", "createdAt", "id"})
 public class User implements UserDetails {
 
     Long id;

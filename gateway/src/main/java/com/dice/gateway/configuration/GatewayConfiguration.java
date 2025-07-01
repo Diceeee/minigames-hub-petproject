@@ -1,6 +1,5 @@
 package com.dice.gateway.configuration;
 
-import com.dice.gateway.Roles;
 import com.dice.gateway.jwt.AccessTokenCookieBearerTokenConverter;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;

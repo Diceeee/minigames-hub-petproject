@@ -23,12 +23,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class AuthServiceController implements ErrorController {
 
     private final UserService userService;
-    private final JavaMailSender mailSender;
 
     @GetMapping("/")
-    public String home(@RequestHeader(name = "X-User-Id", required = false) String userIdHeader, Authentication authentication, Model model) {
-        System.out.println("Home, userId: " + userIdHeader);
-        log.info("Home, userId: " + userIdHeader);
+    public String home(Authentication authentication, Model model) {
         if (authentication != null) {
             Jwt jwt = (Jwt) authentication.getPrincipal();
             Long userId = Long.valueOf(jwt.getSubject());
@@ -47,10 +44,10 @@ public class AuthServiceController implements ErrorController {
 
         return AuthConstants.Uris.LOGIN;
     }
-
-    @RequestMapping("/error")
-    public String error(HttpServletRequest request) {
-        log.info("Error page routed for request: method = {}, uri = {}", request.getMethod(), AuthUtils.getOriginalUrl(request));
-        return "redirect:" + AuthConstants.Uris.HOME;
-    }
+//
+//    @RequestMapping("/error")
+//    public String error(HttpServletRequest request) {
+//        log.info("Error page routed for request: method = {}, uri = {}", request.getMethod(), AuthUtils.getOriginalUrl(request));
+//        return "redirect:" + AuthConstants.Uris.HOME;
+//    }
 }

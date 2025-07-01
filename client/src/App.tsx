@@ -1,19 +1,40 @@
-import React, { useState } from 'react';
-import './App.css';
+import React from 'react';
+import { AuthProvider } from './AuthContext';
+import { ProtectedRoute } from './ProtectedRoute';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import Layout from './Layout';
+import Login from './Login';
+import Register from './Register';
+import EmailVerification from './EmailVerification';
+import Dashboard from './Dashboard';
+import Home from './Home';
+import Refresh from './Refresh';
+import Games from './Games';
+
+const NotFound = () => <div>404 - Page Not Found</div>;
 
 function App() {
-  const [count, setCount] = useState(0);
-
   return (
-    <div className="App">
-      <header className="App-header">
-        <h1>Welcome to the Test Page!</h1>
-        <p>This is a simple React + TypeScript example.</p>
-        <button onClick={() => setCount(count + 1)}>
-          You clicked {count} times
-        </button>
-      </header>
-    </div>
+    <AuthProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Layout />}>
+            <Route index element={<Home />} />
+            <Route path="login" element={<Login />} />
+            <Route path="register" element={<Register />} />
+            <Route path="dashboard" element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            } />
+            <Route path="games" element={<Games />} />
+            <Route path="email/verification/:tokenId" element={<EmailVerification />} />
+            <Route path="refresh" element={<Refresh />} />
+            <Route path="*" element={<NotFound />} />
+          </Route>
+        </Routes>
+      </BrowserRouter>
+    </AuthProvider>
   );
 }
 
