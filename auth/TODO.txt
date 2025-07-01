@@ -8,3 +8,4 @@
 6) Auto-clear expired email verification tokens
 7) Improve errors handling
 8) Deduplication of users names
+9) Fix refresh token session not cleared in some cases (maybe cancel flow?)

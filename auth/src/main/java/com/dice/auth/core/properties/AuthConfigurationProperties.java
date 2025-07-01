@@ -32,7 +32,7 @@ public class AuthConfigurationProperties {
         this.verificationEmailRateLimitInMinutesPerUser = verificationEmailRateLimitInMinutesPerUser == null ? 5 : verificationEmailRateLimitInMinutesPerUser;
 
         this.rsaKeyId = rsaKeyId == null ? "authKeyId" : rsaKeyId;
-        this.issuerName = issuerName == null ? "minigames-hub" : issuerName;
+        this.issuerName = issuerName == null ? "http://localhost:5000" : issuerName;
         
         this.trustProxyHeaders = trustProxyHeaders == null || trustProxyHeaders;
         this.preferExternalIp = preferExternalIp != null && preferExternalIp;

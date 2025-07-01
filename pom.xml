@@ -27,6 +27,7 @@
     <modules>
         <module>auth</module>
         <module>service-registry</module>
+        <module>gateway</module>
     </modules>
 
     <scm>

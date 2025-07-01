@@ -51,7 +51,7 @@ import java.util.Locale;
 public class SecurityConfiguration {
 
     @Bean
-    public JWKSource<SecurityContext> jwkSource(AuthConfigurationProperties authProperties) throws NoSuchAlgorithmException {
+    public JWKSet jwkSet(AuthConfigurationProperties authProperties) throws NoSuchAlgorithmException {
         KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
         keyPairGenerator.initialize(2048);
 
@@ -64,13 +64,29 @@ public class SecurityConfiguration {
                 .keyID(authProperties.getRsaKeyId())
                 .build();
 
-        JWKSet jwkSet = new JWKSet(rsaKey);
+        return new JWKSet(rsaKey);
+    }
+
+    @Bean
+    public JWKSource<SecurityContext> jwkSource(JWKSet jwkSet) {
         return ((jwkSelector, context) -> jwkSelector.select(jwkSet));
     }
 
     @Bean
     public JwtDecoder jwtDecoder(JWKSource<SecurityContext> jwkSource) {
         return OAuth2AuthorizationServerConfiguration.jwtDecoder(jwkSource);
+    }
+
+    @Bean
+    public JwtAuthenticationConverter jwtAuthenticationConverter() {
+        JwtGrantedAuthoritiesConverter grantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
+        grantedAuthoritiesConverter.setAuthorityPrefix("");
+        grantedAuthoritiesConverter.setAuthoritiesClaimName("authorities");
+        grantedAuthoritiesConverter.setAuthoritiesClaimDelimiter(";");
+
+        JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
+        jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(grantedAuthoritiesConverter);
+        return jwtAuthenticationConverter;
     }
 
     @Bean
@@ -88,6 +104,7 @@ public class SecurityConfiguration {
                                 authorizeRequests
                                         .requestMatchers("/css/**", "/js/**", "/images/**", "/favicon.ico",
                                                 "/email/verification/**",
+                                                "/.well-known/**",
                                                 AuthConstants.Uris.HOME)
                                         .permitAll()
                                         .requestMatchers(AuthConstants.Uris.REGISTER + "/**")
@@ -151,7 +168,6 @@ public class SecurityConfiguration {
 
     @Bean
     public EmailOrUsernameAndPasswordAuthenticationFilter emailOrUsernameAndPasswordAuthenticationFilter(UserDetailsService userDetailsService,
-                                                                                                         AuthConfigurationProperties authProperties,
                                                                                                          EmailPasswordAuthenticationProvider emailPasswordAuthenticationProvider,
                                                                                                          TokensGeneratingAuthenticationSuccessHandler tokensGeneratingAuthenticationSuccessHandler,
                                                                                                          MessageSource messageSource) {
@@ -166,17 +182,5 @@ public class SecurityConfiguration {
         emailOrUsernameAndPasswordAuthenticationFilter.setMessageSource(messageSource);
 
         return emailOrUsernameAndPasswordAuthenticationFilter;
-    }
-
-    @Bean
-    public JwtAuthenticationConverter jwtAuthenticationConverter() {
-        JwtGrantedAuthoritiesConverter grantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
-        grantedAuthoritiesConverter.setAuthorityPrefix("");
-        grantedAuthoritiesConverter.setAuthoritiesClaimName("authorities");
-        grantedAuthoritiesConverter.setAuthoritiesClaimDelimiter(";");
-
-        JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
-        jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(grantedAuthoritiesConverter);
-        return jwtAuthenticationConverter;
     }
 }

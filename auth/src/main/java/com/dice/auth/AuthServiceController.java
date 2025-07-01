@@ -14,6 +14,7 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Slf4j
@@ -25,7 +26,9 @@ public class AuthServiceController implements ErrorController {
     private final JavaMailSender mailSender;
 
     @GetMapping("/")
-    public String home(Authentication authentication, Model model) {
+    public String home(@RequestHeader(name = "X-User-Id", required = false) String userIdHeader, Authentication authentication, Model model) {
+        System.out.println("Home, userId: " + userIdHeader);
+        log.info("Home, userId: " + userIdHeader);
         if (authentication != null) {
             Jwt jwt = (Jwt) authentication.getPrincipal();
             Long userId = Long.valueOf(jwt.getSubject());

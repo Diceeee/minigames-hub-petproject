@@ -1,0 +1,38 @@
+spring:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: ${gateway.services.auth.uri}/.well-known/jwks.json
+  cloud:
+    gateway:
+      server:
+        webflux:
+          routes:
+            - id: auth-service
+              uri: ${gateway.services.auth.uri}
+              predicates:
+                - Path=/auth/**
+              filters:
+                - StripPrefix=2
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+    register-with-eureka: true
+    fetch-registry: true
+    registry-fetch-interval-seconds: 30
+  instance:
+    prefer-ip-address: true
+    instance-id: ${spring.application.name}:${server.port}
+
+server:
+  port: 9000
+
+gateway:
+  services:
+    auth:
+      uri: http://localhost:5000
+    frontend:
+      uri: http://localhost:3000
