@@ -30,15 +30,16 @@ public class RegistrationService {
             if (user.isRegistered()) {
                 return RegistrationResult.builder()
                         .isSuccessful(false)
-                        .errorId("already_registered")
+                        .error(RegistrationResult.Error.ALREADY_REGISTERED)
                         .build();
             }
 
             if (user.getUsername() != null && !user.getUsername().equals(registration.getUsername())
                     && userService.userExistWithUsername(registration.getUsername())) {
+
                 return RegistrationResult.builder()
                         .isSuccessful(false)
-                        .errorId("duplicate_username")
+                        .error(RegistrationResult.Error.USERNAME_DUPLICATE)
                         .build();
             }
 
@@ -58,7 +59,7 @@ public class RegistrationService {
             if (userService.userExistWithUsername(registration.getUsername())) {
                 return RegistrationResult.builder()
                         .isSuccessful(false)
-                        .errorId("duplicate_username")
+                        .error(RegistrationResult.Error.USERNAME_DUPLICATE)
                         .build();
             }
 

@@ -1,4 +1,4 @@
-package com.dice.gateway.configuration;
+package com.dice.gateway.core;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;

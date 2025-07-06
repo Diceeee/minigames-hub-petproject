@@ -17,10 +17,9 @@ public interface AuthConstants {
     }
 
     interface Uris {
-        String HOME = "/";
-        String REFRESH = "/refresh";
-        String LOGIN = "/login";
-        String LOGOUT = REFRESH + "/logout";
-        String REGISTER = "/register";
+        String PUBLIC_API_PREFIX = "/api/public";
+        String REFRESH = PUBLIC_API_PREFIX + "/refresh";
+        String LOGIN = PUBLIC_API_PREFIX + "/login";
+        String REGISTER = "/api/public/register";
     }
 }

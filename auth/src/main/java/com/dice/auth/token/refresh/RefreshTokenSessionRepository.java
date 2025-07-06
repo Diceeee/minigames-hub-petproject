@@ -6,6 +6,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -13,6 +14,9 @@ public interface RefreshTokenSessionRepository extends JpaRepository<RefreshToke
 
     @Transactional(readOnly = true)
     Optional<RefreshTokenSessionEntity> findByTokenId(String tokenId);
+
+    @Transactional(readOnly = true)
+    List<RefreshTokenSessionEntity> findAllByUserId(Long userId);
 
     @Modifying
     void deleteByExpiresAtBefore(Instant now);

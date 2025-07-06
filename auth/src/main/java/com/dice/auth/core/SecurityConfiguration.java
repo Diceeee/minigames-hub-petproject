@@ -3,11 +3,9 @@ package com.dice.auth.core;
 import com.dice.auth.AuthConstants;
 import com.dice.auth.core.access.Roles;
 import com.dice.auth.core.properties.AuthConfigurationProperties;
-import com.dice.auth.email.EmailOrUsernameAndPasswordAuthenticationFilter;
 import com.dice.auth.email.EmailPasswordAuthenticationProvider;
 import com.dice.auth.token.AccessTokenCookieBearerTokenResolver;
-import com.dice.auth.token.TokensGeneratingAuthenticationSuccessHandler;
-import com.dice.auth.token.TokensLogoutHandler;
+import com.dice.auth.token.OAuth2LoginTokensGeneratingAuthenticationSuccessHandler;
 import com.dice.auth.token.refresh.RefreshAccessTokenRedirectionFilter;
 import com.dice.auth.token.refresh.RefreshValidator;
 import com.nimbusds.jose.jwk.JWKSet;
@@ -33,9 +31,7 @@ import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configuration.OAuth2AuthorizationServerConfiguration;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
-import org.springframework.security.oauth2.server.resource.web.authentication.BearerTokenAuthenticationFilter;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 
 import java.security.KeyPair;
@@ -92,32 +88,22 @@ public class SecurityConfiguration {
     @Bean
     SecurityFilterChain defaultSecurityFilterChain(HttpSecurity httpSecurity, JwtDecoder jwtDecoder,
                                                    AccessTokenCookieBearerTokenResolver accessTokenCookieBearerTokenResolver,
-                                                   TokensGeneratingAuthenticationSuccessHandler tokensGeneratingAuthenticationSuccessHandler,
-                                                   EmailOrUsernameAndPasswordAuthenticationFilter emailOrUsernameAndPasswordAuthenticationFilter,
-                                                   EmailPasswordAuthenticationProvider emailPasswordAuthenticationProvider,
-                                                   JwtAuthenticationConverter jwtAuthenticationConverter,
-                                                   UserDetailsService userDetailsService,
-                                                   RefreshAccessTokenRedirectionFilter refreshAccessTokenRedirectionFilter,
-                                                   TokensLogoutHandler tokensLogoutHandler) throws Exception {
+                                                   OAuth2LoginTokensGeneratingAuthenticationSuccessHandler OAuth2LoginTokensGeneratingAuthenticationSuccessHandler,
+                                                   JwtAuthenticationConverter jwtAuthenticationConverter) throws Exception {
         return httpSecurity.authorizeHttpRequests(
                         authorizeRequests ->
                                 authorizeRequests
                                         .requestMatchers("/css/**", "/js/**", "/images/**", "/favicon.ico",
-                                                "/email/verification/**",
+                                                "/api/public/email/verification/**",
                                                 "/.well-known/**",
-                                                AuthConstants.Uris.HOME)
+                                                "/api/public/**")
                                         .permitAll()
                                         .requestMatchers(AuthConstants.Uris.REGISTER + "/**")
                                         .not().hasAnyRole(Roles.USER.getRoleWithoutPrefix(), Roles.ADMIN.getRoleWithoutPrefix())
                                         .anyRequest().hasAnyRole(Roles.USER.getRoleWithoutPrefix(), Roles.ADMIN.getRoleWithoutPrefix()))
-                .authenticationProvider(emailPasswordAuthenticationProvider)
-                .userDetailsService(userDetailsService)
-                .formLogin(configurer -> configurer
-                        .loginPage(AuthConstants.Uris.LOGIN).permitAll()
-                        .successHandler(tokensGeneratingAuthenticationSuccessHandler))
                 .oauth2Login(configurer -> configurer
                         .loginPage(AuthConstants.Uris.LOGIN).permitAll()
-                        .successHandler(tokensGeneratingAuthenticationSuccessHandler))
+                        .successHandler(OAuth2LoginTokensGeneratingAuthenticationSuccessHandler))
                 .oauth2ResourceServer(oauth2 -> oauth2
                         .jwt(jwtConfigurer -> jwtConfigurer
                                 .decoder(jwtDecoder)
@@ -126,14 +112,8 @@ public class SecurityConfiguration {
                 )
                 .sessionManagement(sessionConfigurer -> sessionConfigurer
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .logout(configurer -> configurer
-                        .logoutUrl(AuthConstants.Uris.LOGOUT)
-                        .addLogoutHandler(tokensLogoutHandler)
-                )
                 .csrf(csrf -> csrf
                         .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
-                .addFilterBefore(refreshAccessTokenRedirectionFilter, BearerTokenAuthenticationFilter.class)
-                .addFilterAt(emailOrUsernameAndPasswordAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
 
@@ -156,6 +136,18 @@ public class SecurityConfiguration {
     }
 
     @Bean
+    public AuthenticationManager authenticationManager(EmailPasswordAuthenticationProvider emailPasswordAuthenticationProvider,
+                                                       UserDetailsService userDetailsService,
+                                                       PasswordEncoder passwordEncoder,
+                                                       MessageSource messageSource) {
+        DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider(userDetailsService);
+        daoAuthenticationProvider.setPasswordEncoder(passwordEncoder);
+        daoAuthenticationProvider.setMessageSource(messageSource);
+
+        return new ProviderManager(List.of(daoAuthenticationProvider, emailPasswordAuthenticationProvider));
+    }
+
+    @Bean
     @Primary
     public MessageSource messageSource() {
         ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
@@ -164,23 +156,5 @@ public class SecurityConfiguration {
         messageSource.setDefaultEncoding("UTF-8");
         messageSource.setFallbackToSystemLocale(false);
         return messageSource;
-    }
-
-    @Bean
-    public EmailOrUsernameAndPasswordAuthenticationFilter emailOrUsernameAndPasswordAuthenticationFilter(UserDetailsService userDetailsService,
-                                                                                                         EmailPasswordAuthenticationProvider emailPasswordAuthenticationProvider,
-                                                                                                         TokensGeneratingAuthenticationSuccessHandler tokensGeneratingAuthenticationSuccessHandler,
-                                                                                                         MessageSource messageSource) {
-        DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider(userDetailsService);
-        daoAuthenticationProvider.setPasswordEncoder(passwordEncoder());
-        daoAuthenticationProvider.setMessageSource(messageSource);
-
-        AuthenticationManager authenticationManager = new ProviderManager(List.of(daoAuthenticationProvider, emailPasswordAuthenticationProvider));
-        EmailOrUsernameAndPasswordAuthenticationFilter emailOrUsernameAndPasswordAuthenticationFilter = new EmailOrUsernameAndPasswordAuthenticationFilter(authenticationManager,
-                AuthConstants.Uris.LOGIN);
-        emailOrUsernameAndPasswordAuthenticationFilter.setAuthenticationSuccessHandler(tokensGeneratingAuthenticationSuccessHandler);
-        emailOrUsernameAndPasswordAuthenticationFilter.setMessageSource(messageSource);
-
-        return emailOrUsernameAndPasswordAuthenticationFilter;
     }
 }

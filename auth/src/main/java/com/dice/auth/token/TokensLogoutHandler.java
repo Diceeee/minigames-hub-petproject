@@ -20,14 +20,13 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 @AllArgsConstructor
-public class TokensLogoutHandler implements LogoutHandler {
+public class TokensLogoutHandler  {
 
     private final RefreshTokenSessionService sessionService;
     private final CookiesCreator cookiesCreator;
     private final TokensParser tokensParser;
 
-    @Override
-    public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
+    public void logout(HttpServletRequest request, HttpServletResponse response) {
         AuthUtils.getCookieValue(request, AuthConstants.Cookies.REFRESH_TOKEN)
                 .ifPresent(this::endRefreshTokenSession);
 

@@ -1,4 +1,4 @@
-package com.dice.gateway.configuration;
+package com.dice.gateway.core;
 
 import com.dice.gateway.jwt.AccessTokenCookieBearerTokenConverter;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;

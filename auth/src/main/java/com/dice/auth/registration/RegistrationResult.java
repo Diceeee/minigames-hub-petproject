@@ -11,5 +11,10 @@ public class RegistrationResult {
     String updatedAccessToken;
     User registeredUser;
     boolean isSuccessful;
-    String errorId;
+    Error error;
+
+    public enum Error {
+        USERNAME_DUPLICATE,
+        ALREADY_REGISTERED
+    }
 }

@@ -9,7 +9,7 @@ import java.util.Map;
 
 @RestController
 @AllArgsConstructor
-public class WellKnownController {
+public class WellKnownRestController {
 
     private final JWKSet jwkSet;
 

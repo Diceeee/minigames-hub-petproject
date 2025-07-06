@@ -40,8 +40,4 @@ public class UserService {
     public User save(User user) {
         return userMapper.mapUserEntity(userRepository.save(userMapper.mapUserToEntity(user)));
     }
-
-    public void deleteById(Long userId) {
-        userRepository.deleteById(userId);
-    }
 }

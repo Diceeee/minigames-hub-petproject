@@ -3,12 +3,10 @@ package com.dice.auth.token;
 import com.dice.auth.AuthConstants;
 import com.dice.auth.CookiesCreator;
 import com.dice.auth.core.util.AuthUtils;
-import com.dice.auth.email.EmailPasswordAuthenticationToken;
 import com.dice.auth.user.UserService;
 import com.dice.auth.user.dto.User;
 import com.dice.auth.user.exception.UserNotFoundException;
 import com.nimbusds.jose.JOSEException;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -16,22 +14,20 @@ import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
 import java.time.Clock;
 
 /**
- * Handles successful authentications in application and assigns to users access and refresh tokens.
+ * Handles successful authentications in application using OAuth2 and assigns to users access and refresh tokens.
  */
 @Component
 @AllArgsConstructor
-public class TokensGeneratingAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
+public class OAuth2LoginTokensGeneratingAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
 
     private static final String GOOGLE_OAUTH2_ID = "google";
 
@@ -42,22 +38,14 @@ public class TokensGeneratingAuthenticationSuccessHandler implements Authenticat
 
     @SneakyThrows
     @Override
-    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
-        if (UsernamePasswordAuthenticationToken.class.isAssignableFrom(authentication.getClass())) {
-            UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = (UsernamePasswordAuthenticationToken) authentication;
-            handleAuthenticationToken(request, response, usernamePasswordAuthenticationToken);
-        }
-        if (EmailPasswordAuthenticationToken.class.isAssignableFrom(authentication.getClass())) {
-            EmailPasswordAuthenticationToken emailPasswordAuthenticationToken = (EmailPasswordAuthenticationToken) authentication;
-            handleAuthenticationToken(request, response, emailPasswordAuthenticationToken);
-        }
+    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
         if (OAuth2AuthenticationToken.class.isAssignableFrom(authentication.getClass())) {
             OAuth2AuthenticationToken oAuth2AuthenticationToken = (OAuth2AuthenticationToken) authentication;
             handleAuthenticationToken(request, response, oAuth2AuthenticationToken);
         }
     }
 
-    private void handleAuthenticationToken(HttpServletRequest request, HttpServletResponse response, AbstractAuthenticationToken authenticationToken) throws JOSEException, IOException {
+    private void handleAuthenticationToken(HttpServletRequest request, HttpServletResponse response, AbstractAuthenticationToken authenticationToken) throws JOSEException {
         User authenticatedUser = getUserByToken(authenticationToken);
         Pair<String, String> accessAndRefreshTokens = tokensGenerator.generateTokensForUser(authenticatedUser,
                 request.getHeader(AuthConstants.Headers.USER_AGENT),
@@ -68,18 +56,9 @@ public class TokensGeneratingAuthenticationSuccessHandler implements Authenticat
 
         response.addCookie(accessTokenCookie);
         response.addCookie(refreshTokenCookie);
-
-        if (!authenticatedUser.isRegistered()) {
-            response.sendRedirect(AuthConstants.Uris.REGISTER);
-        } else {
-            response.sendRedirect(AuthConstants.Uris.HOME);
-        }
     }
 
     private User getUserByToken(AbstractAuthenticationToken authenticationToken) {
-        if (authenticationToken.getPrincipal() instanceof User) {
-            return (User) authenticationToken.getPrincipal();
-        }
         if (authenticationToken instanceof OAuth2AuthenticationToken oAuth2AuthenticationToken) {
             DefaultOidcUser oidcUser = (DefaultOidcUser) authenticationToken.getPrincipal();
             String userEmail = oidcUser.getEmail();
