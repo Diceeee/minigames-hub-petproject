@@ -19,10 +19,12 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -32,7 +34,7 @@ import org.springframework.security.oauth2.server.authorization.config.annotatio
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
@@ -88,7 +90,7 @@ public class SecurityConfiguration {
     @Bean
     SecurityFilterChain defaultSecurityFilterChain(HttpSecurity httpSecurity, JwtDecoder jwtDecoder,
                                                    AccessTokenCookieBearerTokenResolver accessTokenCookieBearerTokenResolver,
-                                                   OAuth2LoginTokensGeneratingAuthenticationSuccessHandler OAuth2LoginTokensGeneratingAuthenticationSuccessHandler,
+                                                   OAuth2LoginTokensGeneratingAuthenticationSuccessHandler oAuth2LoginTokensGeneratingAuthenticationSuccessHandler,
                                                    JwtAuthenticationConverter jwtAuthenticationConverter) throws Exception {
         return httpSecurity.authorizeHttpRequests(
                         authorizeRequests ->
@@ -103,7 +105,13 @@ public class SecurityConfiguration {
                                         .anyRequest().hasAnyRole(Roles.USER.getRoleWithoutPrefix(), Roles.ADMIN.getRoleWithoutPrefix()))
                 .oauth2Login(configurer -> configurer
                         .loginPage(AuthConstants.Uris.LOGIN).permitAll()
-                        .successHandler(OAuth2LoginTokensGeneratingAuthenticationSuccessHandler))
+                        .authorizationEndpoint(authorization ->
+                                authorization.baseUri("/api/public/oauth2/authorization")
+                        )
+                        .redirectionEndpoint(redirection ->
+                                redirection.baseUri("/api/public/login/oauth2/code/*")
+                        )
+                        .successHandler(oAuth2LoginTokensGeneratingAuthenticationSuccessHandler))
                 .oauth2ResourceServer(oauth2 -> oauth2
                         .jwt(jwtConfigurer -> jwtConfigurer
                                 .decoder(jwtDecoder)
@@ -112,21 +120,16 @@ public class SecurityConfiguration {
                 )
                 .sessionManagement(sessionConfigurer -> sessionConfigurer
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .csrf(csrf -> csrf
-                        .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
+                .exceptionHandling(exception -> exception
+                        .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
+                )
+                .csrf(AbstractHttpConfigurer::disable)
                 .build();
     }
 
     @Bean
     public RefreshAccessTokenRedirectionFilter accessTokenRefreshFilter(RefreshValidator refreshValidator) {
         return new RefreshAccessTokenRedirectionFilter(refreshValidator);
-    }
-
-    @Bean
-    public FilterRegistrationBean<RefreshAccessTokenRedirectionFilter> accessTokenRefreshFilterRegistrationBean(RefreshAccessTokenRedirectionFilter refreshAccessTokenRedirectionFilter) {
-        FilterRegistrationBean<RefreshAccessTokenRedirectionFilter> filterFilterRegistrationBean = new FilterRegistrationBean<>(refreshAccessTokenRedirectionFilter);
-        filterFilterRegistrationBean.setEnabled(false);
-        return filterFilterRegistrationBean;
     }
 
 

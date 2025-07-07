@@ -34,11 +34,10 @@ import java.io.IOException;
 // todo: should be extracted to gateway in future
 @Slf4j
 @AllArgsConstructor
-public class RefreshAccessTokenRedirectionFilter extends OncePerRequestFilter {
+public class RefreshAccessTokenRedirectionFilter {
 
     private final RefreshValidator refreshValidator;
 
-    @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         Cookie[] cookies = request.getCookies();
         String accessToken = null;

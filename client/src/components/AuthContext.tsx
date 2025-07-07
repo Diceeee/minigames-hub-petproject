@@ -1,4 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
+import api from 'api/api';
+import { API_BASE_URL } from 'api/urls';
+import axios from 'axios';
 
 type User = {
   id: string;
@@ -22,19 +25,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchProfile = async () => {
+  const fetchProfile = async (): Promise<void> => {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch('/api/me', { credentials: 'include' });
-      if (res.ok) {
-        setUser(await res.json());
+      const res = await api.get<User>('/auth/user/me', { withCredentials: true });
+      setUser(res.data);
+    } catch (e: unknown) {
+      if (axios.isAxiosError(e) && e.response) {
+        setUser(null);
       } else {
+        setError('Network error');
         setUser(null);
       }
-    } catch (e) {
-      setError('Network error');
-      setUser(null);
     } finally {
       setLoading(false);
     }
@@ -44,10 +47,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     fetchProfile();
   }, []);
 
+  useEffect(() => {
+      api.get("/csrf");
+  }, []);
+
   const refresh = fetchProfile;
   const logout = async () => {
-    await fetch('/api/logout', { method: 'POST', credentials: 'include' });
-    setUser(null);
+      await api.post('auth/refresh/logout', null, { withCredentials: true });
+      setUser(null);
   };
 
   return (

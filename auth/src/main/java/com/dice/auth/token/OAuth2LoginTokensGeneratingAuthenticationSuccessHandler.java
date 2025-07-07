@@ -2,6 +2,7 @@ package com.dice.auth.token;
 
 import com.dice.auth.AuthConstants;
 import com.dice.auth.CookiesCreator;
+import com.dice.auth.core.properties.AuthConfigurationProperties;
 import com.dice.auth.core.util.AuthUtils;
 import com.dice.auth.user.UserService;
 import com.dice.auth.user.dto.User;
@@ -20,6 +21,7 @@ import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
 import java.time.Clock;
 
 /**
@@ -31,6 +33,7 @@ public class OAuth2LoginTokensGeneratingAuthenticationSuccessHandler implements 
 
     private static final String GOOGLE_OAUTH2_ID = "google";
 
+    private final AuthConfigurationProperties authProperties;
     private final TokensGenerator tokensGenerator;
     private final CookiesCreator cookiesCreator;
     private final UserService userService;
@@ -45,7 +48,7 @@ public class OAuth2LoginTokensGeneratingAuthenticationSuccessHandler implements 
         }
     }
 
-    private void handleAuthenticationToken(HttpServletRequest request, HttpServletResponse response, AbstractAuthenticationToken authenticationToken) throws JOSEException {
+    private void handleAuthenticationToken(HttpServletRequest request, HttpServletResponse response, AbstractAuthenticationToken authenticationToken) throws JOSEException, IOException {
         User authenticatedUser = getUserByToken(authenticationToken);
         Pair<String, String> accessAndRefreshTokens = tokensGenerator.generateTokensForUser(authenticatedUser,
                 request.getHeader(AuthConstants.Headers.USER_AGENT),
@@ -56,6 +59,7 @@ public class OAuth2LoginTokensGeneratingAuthenticationSuccessHandler implements 
 
         response.addCookie(accessTokenCookie);
         response.addCookie(refreshTokenCookie);
+        response.sendRedirect(authProperties.getFrontendUrl());
     }
 
     private User getUserByToken(AbstractAuthenticationToken authenticationToken) {

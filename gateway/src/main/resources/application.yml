@@ -15,7 +15,7 @@ spring:
                 - Path=/auth/**
               filters:
                 - StripPrefix=1
-                - AddPrefix=/api/public
+                - PrefixPath=/api/public
 
 eureka:
   client:

@@ -22,10 +22,12 @@ public class AuthConfigurationProperties {
     boolean trustProxyHeaders;
     boolean preferExternalIp;
 
+    String frontendUrl;
+
     @ConstructorBinding
     public AuthConfigurationProperties(Integer refreshWindowInMinutes, Integer refreshTokenExpirationInDays, Integer accessTokenExpirationInMinutes,
                                        Integer verificationEmailRateLimitInMinutesPerUser, String rsaKeyId, String issuerName,
-                                       Boolean trustProxyHeaders, Boolean preferExternalIp) {
+                                       Boolean trustProxyHeaders, Boolean preferExternalIp, String frontendUrl) {
         this.refreshWindowInMinutes = refreshWindowInMinutes == null ? 5 : refreshWindowInMinutes;
         this.refreshTokenExpirationInDays = refreshTokenExpirationInDays == null ? 60 : refreshTokenExpirationInDays;
         this.accessTokenExpirationInMinutes = accessTokenExpirationInMinutes == null ? 30 : accessTokenExpirationInMinutes;
@@ -36,5 +38,6 @@ public class AuthConfigurationProperties {
         
         this.trustProxyHeaders = trustProxyHeaders == null || trustProxyHeaders;
         this.preferExternalIp = preferExternalIp != null && preferExternalIp;
+        this.frontendUrl = frontendUrl == null ? "http://localhost:3000" : frontendUrl;
     }
 }

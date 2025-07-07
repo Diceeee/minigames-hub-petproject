@@ -4,6 +4,7 @@ import com.dice.gateway.jwt.AccessTokenCookieBearerTokenConverter;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.oauth2.jwt.NimbusReactiveJwtDecoder;
 import org.springframework.security.oauth2.jwt.ReactiveJwtDecoder;
@@ -11,7 +12,8 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.oauth2.server.resource.authentication.ReactiveJwtAuthenticationConverterAdapter;
 import org.springframework.security.web.server.SecurityWebFilterChain;
-import org.springframework.security.web.server.authentication.RedirectServerAuthenticationEntryPoint;
+import org.springframework.security.web.server.csrf.CookieServerCsrfTokenRepository;
+import org.springframework.security.web.server.csrf.ServerCsrfTokenRequestAttributeHandler;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.reactive.CorsWebFilter;
 import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
@@ -21,6 +23,7 @@ import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
 public class GatewayConfiguration {
 
     @Bean
+    @Order(Integer.MIN_VALUE)
     public CorsWebFilter corsWebFilter(GatewayProperties gatewayProperties) {
         CorsConfiguration corsConfig = new CorsConfiguration();
         corsConfig.addAllowedOrigin(gatewayProperties.getServices().getFrontend().getUri());
@@ -56,8 +59,15 @@ public class GatewayConfiguration {
                                                       ReactiveJwtAuthenticationConverterAdapter reactiveJwtAuthenticationConverterAdapter,
                                                       AccessTokenCookieBearerTokenConverter accessTokenCookieBearerTokenConverter) {
         http
+                .csrf(csrf -> {
+                            var delegate = new ServerCsrfTokenRequestAttributeHandler();
+                            csrf.csrfTokenRepository(CookieServerCsrfTokenRepository.withHttpOnlyFalse()).csrfTokenRequestHandler(delegate::handle);
+                        }
+                )
                 .authorizeExchange(authorize -> authorize
-                        .pathMatchers("/auth/login/**", "/auth", "/auth/register/**", "/css/**", "/js/**", "/images/**", "/favicon.ico").permitAll()
+                        .pathMatchers("/auth/login/**", "/auth/register/**", "/css/**", "/js/**", "/images/**", "/favicon.ico",
+                                "/auth/oauth2/authorization/**", "/csrf", "/auth/refresh/**")
+                        .permitAll()
                         .anyExchange().authenticated()
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2
@@ -65,7 +75,6 @@ public class GatewayConfiguration {
                                 .jwtDecoder(reactiveJwtDecoder)
                                 .jwtAuthenticationConverter(reactiveJwtAuthenticationConverterAdapter))
                         .bearerTokenConverter(accessTokenCookieBearerTokenConverter)
-                        .authenticationEntryPoint(new RedirectServerAuthenticationEntryPoint("/auth/login"))
                 );
         return http.build();
     }
