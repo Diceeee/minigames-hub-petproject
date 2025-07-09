@@ -2,10 +2,8 @@ package com.dice.gateway.core;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.validation.annotation.Validated;
 
 @Data
-@Validated
 @ConfigurationProperties(prefix = "gateway")
 public class GatewayProperties {
     private Services services;
@@ -19,5 +17,6 @@ public class GatewayProperties {
     @Data
     public static class ServiceConfig {
         private String uri;
+        private String serviceName;
     }
 }

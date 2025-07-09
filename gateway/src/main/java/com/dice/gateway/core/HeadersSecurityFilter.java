@@ -30,9 +30,10 @@ public class HeadersSecurityFilter implements GlobalFilter, Ordered {
 
         ServerWebExchange exchangeWithRemovedUserHeaders = exchange.mutate()
                 .request(exchange.getRequest().mutate()
-                        .headers(headers -> headers
-                                .remove(Headers.USER_ID)
-                                .remove(Headers.SESSION_ID))
+                        .headers(headers -> {
+                            headers.remove(Headers.USER_ID);
+                            headers.remove(Headers.SESSION_ID);
+                        })
                         .build())
                 .build();
 

@@ -10,7 +10,7 @@ spring:
         webflux:
           routes:
             - id: auth-service
-              uri: ${gateway.services.auth.uri}
+              uri: 'lb://${gateway.services.auth.service-name}'
               predicates:
                 - Path=/auth/**
               filters:
@@ -23,7 +23,7 @@ eureka:
       defaultZone: http://localhost:8761/eureka/
     register-with-eureka: true
     fetch-registry: true
-    registry-fetch-interval-seconds: 30
+    registry-fetch-interval-seconds: 5
   instance:
     prefer-ip-address: true
     instance-id: ${spring.application.name}:${server.port}
@@ -35,6 +35,7 @@ gateway:
   services:
     auth:
       uri: http://localhost:5000
+      service-name: auth-service
     frontend:
       uri: http://localhost:3000
 
