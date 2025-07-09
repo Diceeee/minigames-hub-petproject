@@ -34,7 +34,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({children}
         setError(null);
 
         try {
-            console.log("User me called");
             const res = await api.get<User>('/auth/user/me', {withCredentials: true});
             tryRefreshOnAccessDenied.current = true;
             setUser(res.data);
@@ -55,7 +54,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({children}
     }, []);
 
     useEffect(() => {
-        api.get("/csrf").catch(error => console.log(error));
+        api.get("/csrf");
     }, []);
 
     const refresh = fetchProfile;

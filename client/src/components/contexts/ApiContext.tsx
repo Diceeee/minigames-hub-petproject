@@ -29,12 +29,6 @@ export const ApiProvider: React.FC<{ children: React.ReactNode }> = ({children})
     // Response interceptor refresh logic as ref
     const refreshInterceptor = useRef<null | ((error: any) => Promise<any>)>(null);
     refreshInterceptor.current = async (error: any) => {
-        console.log(`Error in response interceptor: ${error}`);
-        console.log(`Refresh attempt was performed: ${tryRefreshOnAccessDenied}`);
-        console.log(`Will try refresh? - ${error.response &&
-        (error.response.status === 401 || error.response.status === 403) &&
-        tryRefreshOnAccessDenied.current}, inputs: ${error.response}, ${error.response?.status}, ${tryRefreshOnAccessDenied.current}`);
-
         if (error.response &&
             (error.response.status === 401 || error.response.status === 403) &&
             tryRefreshOnAccessDenied.current
