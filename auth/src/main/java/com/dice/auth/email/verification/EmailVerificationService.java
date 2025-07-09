@@ -79,9 +79,10 @@ public class EmailVerificationService {
 
     private void handleExistingVerificationToken(User user, EmailVerificationTokenEntity emailVerificationToken) {
         Instant now = clock.instant();
-        Instant allowedForRecreationAfter = now.plus(authProperties.getVerificationEmailRateLimitInMinutesPerUser(), ChronoUnit.MINUTES);
+        Instant emailTokenCreatedAt = emailVerificationToken.getCreatedAt();
+        Instant allowedForRecreationAfter = emailTokenCreatedAt.plus(authProperties.getVerificationEmailRateLimitInMinutesPerUser(), ChronoUnit.MINUTES);
 
-        if (emailVerificationToken.getCreatedAt().isAfter(allowedForRecreationAfter)) {
+        if (now.isAfter(allowedForRecreationAfter)) {
             String newTokenId = UUID.randomUUID().toString();
             emailVerificationTokenRepository.save(new EmailVerificationTokenEntity(
                     emailVerificationToken.getId(), newTokenId, emailVerificationToken.getUserId(), now
@@ -98,7 +99,7 @@ public class EmailVerificationService {
                       <body>
                         <p>Hello,</p>
                         <p>Please confirm your email by clicking the button below:</p>
-                        <a href="http://localhost:5000/email/verification/%s"
+                        <a href="http://localhost:9000/auth/email/verification/%s"
                            style="display: inline-block; padding: 12px 24px; font-size: 16px; color: #fff; background-color: #007bff; text-decoration: none; border-radius: 4px;">
                           Confirm Email
                         </a>

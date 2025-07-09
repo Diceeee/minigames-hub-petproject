@@ -1,0 +1,94 @@
+/* Games.module.css - extracted from inline styles in Games.tsx */
+
+.gameContainer {
+  display: flex;
+  max-width: 1000px;
+  margin: 2rem auto;
+  background: var(--dark-bg, #181a20);
+  border-radius: 1.2rem;
+  box-shadow: 0 4px 32px var(--neon-blue-33, #00eaff33);
+  min-height: 400px;
+  border: 2px solid var(--neon-pink, #ff00c8);
+}
+
+.gameList {
+  flex: 0 0 28%;
+  border-right: 2px solid var(--neon-blue, #00eaff);
+  padding: 2rem 1rem;
+  background: var(--dark-panel, #23242b);
+  border-top-left-radius: 1.2rem;
+  border-bottom-left-radius: 1.2rem;
+}
+
+.gameListHeader {
+  margin-bottom: 1.5rem;
+  color: var(--neon-pink, #ff00c8);
+  text-shadow: 0 0 8px var(--neon-pink, #ff00c8);
+}
+
+.gameListItems {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.gameListItem {
+  margin-bottom: 1rem;
+}
+
+.gameButton {
+  background: transparent;
+  color: var(--neon-blue, #00eaff);
+  border: 2px solid var(--neon-blue, #00eaff);
+  border-radius: 0.5rem;
+  padding: 0.75rem 1rem;
+  width: 100%;
+  text-align: left;
+  font-weight: bold;
+  cursor: pointer;
+  font-family: var(--orbitron, Orbitron, sans-serif);
+  font-size: 1.1rem;
+  transition: background 0.2s, color 0.2s;
+}
+
+.selectedGameButton {
+  background: var(--neon-blue, #00eaff);
+  color: var(--dark-bg, #181a20);
+  box-shadow: 0 0 12px var(--neon-blue, #00eaff);
+}
+
+.gameDetails {
+  flex: 1;
+  padding: 2.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: var(--neon-blue, #00eaff);
+  font-family: var(--orbitron, Orbitron, sans-serif);
+}
+
+.gameDetailsHeader {
+  color: var(--neon-pink, #ff00c8);
+  margin-bottom: 1.5rem;
+  text-shadow: 0 0 12px var(--neon-pink, #ff00c8);
+}
+
+.gameDetailsDescription {
+  font-size: 1.15rem;
+  margin-bottom: 2rem;
+  text-align: center;
+  text-shadow: 0 0 8px var(--neon-blue, #00eaff);
+}
+
+.playButton {
+  background: var(--neon-pink, #ff00c8);
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  padding: 0.75rem 2.5rem;
+  font-size: 1.25rem;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 0 12px var(--neon-pink, #ff00c8);
+} 

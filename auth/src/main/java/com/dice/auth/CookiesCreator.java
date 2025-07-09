@@ -23,7 +23,7 @@ public class CookiesCreator {
         Cookie cookie = new Cookie(AuthConstants.Cookies.REFRESH_TOKEN, refreshToken);
         cookie.setHttpOnly(true);
         cookie.setSecure(false); // Set to true for HTTPS
-        cookie.setPath("/auth/refresh");
+        cookie.setPath("/auth");
         cookie.setMaxAge((int) Duration.ofDays(200).getSeconds());
         return cookie;
     }
@@ -41,7 +41,7 @@ public class CookiesCreator {
         Cookie cookie = new Cookie(AuthConstants.Cookies.REFRESH_TOKEN, "");
         cookie.setHttpOnly(true);
         cookie.setSecure(false); // Set to true for HTTPS
-        cookie.setPath("/auth/refresh");
+        cookie.setPath("/auth");
         cookie.setMaxAge(0);
         return cookie;
     }

@@ -1,0 +1,94 @@
+/* Register.module.css - extracted from inline styles in Register.tsx */
+:root {
+  --neon-blue-33: #00eaff33;
+}
+
+.registerContainer {
+  max-width: 400px;
+  margin: 2rem auto;
+  padding: 2.5rem;
+  background: var(--dark-bg);
+  border-radius: 1.2rem;
+  box-shadow: 0 4px 32px var(--neon-blue-33);
+  color: var(--neon-blue);
+  font-family: var(--orbitron, Orbitron, sans-serif);
+  border: 2px solid var(--neon-pink);
+}
+
+.title {
+  color: var(--neon-pink);
+  text-shadow: 0 0 8px var(--neon-pink);
+}
+
+.formGroup {
+  margin-bottom: 1rem;
+}
+
+.input {
+  width: 100%;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--neon-blue);
+  background: var(--dark-bg);
+  color: var(--neon-blue);
+  font-weight: bold;
+  font-size: 1.05rem;
+}
+
+.error {
+  color: var(--neon-red);
+  margin-bottom: 1rem;
+  font-weight: bold;
+}
+
+.success {
+  color: var(--neon-blue);
+  margin-bottom: 1rem;
+  font-weight: bold;
+}
+
+.submitButton {
+  width: 100%;
+  padding: 0.75rem;
+  background: var(--neon-pink);
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  font-size: 1.1rem;
+  font-weight: bold;
+  box-shadow: 0 0 8px var(--neon-pink);
+}
+
+.orLine {
+  margin: 2rem 0;
+  border-bottom: 1px solid var(--neon-blue-55, #00eaff55);
+  text-align: center;
+  position: relative;
+}
+
+.orText {
+  position: relative;
+  top: 12px;
+  background: var(--dark-bg, #181a20);
+  padding: 0 1rem;
+  color: var(--neon-blue, #00eaff);
+  font-weight: bold;
+  font-size: 1rem;
+}
+
+.googleButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: white;
+  color: #222;
+  border: none;
+  border-radius: 0.5rem;
+  padding: 0.75rem;
+  font-weight: bold;
+  font-size: 1.1rem;
+  box-shadow: 0 0 8px var(--neon-blue, #00eaff);
+  text-decoration: none;
+  transition: background 0.2s;
+  cursor: pointer;
+}

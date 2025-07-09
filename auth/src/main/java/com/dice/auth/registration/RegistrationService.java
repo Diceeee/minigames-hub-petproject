@@ -6,6 +6,7 @@ import com.dice.auth.token.TokensGenerator;
 import com.dice.auth.user.UserService;
 import com.dice.auth.user.dto.User;
 import com.dice.auth.user.exception.UserNotFoundException;
+import com.nimbusds.jose.JOSEException;
 import lombok.AllArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -24,7 +25,7 @@ public class RegistrationService {
     private final EmailVerificationService emailVerificationService;
 
     @Transactional
-    public RegistrationResult register(RegistrationDto registration) {
+    public RegistrationResult register(RegistrationDto registration, String refreshToken, String userAgent) throws JOSEException {
         try {
             User user = userService.getUserByEmail(registration.getEmail());
             if (user.isRegistered()) {
@@ -43,6 +44,14 @@ public class RegistrationService {
                         .build();
             }
 
+            if (user.inEmailVerificationProcess()) {
+                emailVerificationService.createOrRecreateEmailVerificationTokenForUser(user.getId());
+                return RegistrationResult.builder()
+                        .isSuccessful(true)
+                        .registeredUser(user)
+                        .build();
+            }
+
             User registeredUser = userService.save(user.toBuilder()
                     .username(registration.getUsername())
                     .password(passwordEncoder.encode(registration.getPassword()))
@@ -52,7 +61,7 @@ public class RegistrationService {
 
             return RegistrationResult.builder()
                     .isSuccessful(true)
-                    .updatedAccessToken(tokensGenerator.generateAccessTokenForUser(registeredUser))
+                    .updatedAccessToken(tokensGenerator.generateAccessTokenForUser(registeredUser, refreshToken, userAgent))
                     .registeredUser(registeredUser)
                     .build();
         } catch (UserNotFoundException e) {

@@ -4,6 +4,7 @@ import com.dice.auth.AuthConstants;
 import com.dice.auth.CookiesCreator;
 import com.dice.auth.core.exception.ApiError;
 import com.dice.auth.core.exception.ApiException;
+import com.dice.auth.core.properties.AuthConfigurationProperties;
 import com.dice.auth.core.util.AuthUtils;
 import com.dice.auth.token.TokensGenerator;
 import com.nimbusds.jose.JOSEException;
@@ -18,17 +19,20 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@RestController
+import java.io.IOException;
+
+@Controller
 @AllArgsConstructor
 @RequestMapping(path = "/api/public/email/verification")
 public class EmailVerificationController {
 
+    private final AuthConfigurationProperties authProperties;
     private final EmailVerificationService emailVerificationService;
     private final TokensGenerator tokensGenerator;
     private final CookiesCreator cookiesCreator;
 
     @GetMapping("{tokenId}")
-    public void verifyEmail(@PathVariable String tokenId, HttpServletRequest request, HttpServletResponse response) throws JOSEException {
+    public void verifyEmail(@PathVariable String tokenId, HttpServletRequest request, HttpServletResponse response) throws JOSEException, IOException {
         EmailVerificationResult emailVerificationResult = emailVerificationService.verifyEmail(tokenId);
         if (emailVerificationResult.isSuccessful()) {
             Pair<String, String> accessAndRefreshTokens = tokensGenerator.generateTokensForUser(emailVerificationResult.getVerifiedUser(),
@@ -40,6 +44,8 @@ public class EmailVerificationController {
 
             response.addCookie(accessTokenCookie);
             response.addCookie(refreshTokenCookie);
+
+            response.sendRedirect(authProperties.getFrontendUrl());
         } else {
             switch (emailVerificationResult.getError()) {
                 case TOKEN_NOT_FOUND -> throw new ApiException("Token not found by token id " + tokenId, ApiError.EMAIL_VERIFICATION_TOKEN_NOT_FOUND);

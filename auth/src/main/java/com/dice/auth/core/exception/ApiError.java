@@ -19,6 +19,7 @@ public enum ApiError {
 
     // --- Refresh ---
     REFRESH_IS_TOO_FREQUENT(300),
+    REFRESH_TOKEN_MISSING(301),
 
     // --- Registration ---
     REGISTRATION_FAILED_DUPLICATE_USERNAME(400),

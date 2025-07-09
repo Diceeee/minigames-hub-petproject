@@ -76,6 +76,7 @@ public class TokensGenerator {
                 .claim(AuthConstants.Claims.AUTHORITIES, user.getAuthorities().stream()
                         .map(GrantedAuthority::getAuthority)
                         .collect(Collectors.joining(";")))
+                .claim(AuthConstants.Claims.SESSION_ID, refreshTokenSession.getId())
                 .compact();
 
         String refreshToken = Jwts.builder()
@@ -103,18 +104,6 @@ public class TokensGenerator {
         Date refreshTokenExpiration = Date.from(clock.instant().plus(authProperties.getRefreshTokenExpirationInDays(), ChronoUnit.DAYS));
         RSAKey key = rsaKeyProvider.getRsaKey();
 
-        String accessToken = Jwts.builder()
-                .id(UUID.randomUUID().toString())
-                .issuer(authProperties.getIssuerName())
-                .issuedAt(jjwtClock.now())
-                .expiration(Date.from(clock.instant().plus(authProperties.getAccessTokenExpirationInMinutes(), ChronoUnit.MINUTES)))
-                .signWith(key.toPrivateKey())
-                .subject(user.getId().toString())
-                .claim(AuthConstants.Claims.AUTHORITIES, user.getAuthorities().stream()
-                        .map(GrantedAuthority::getAuthority)
-                        .collect(Collectors.joining(";")))
-                .compact();
-
         String refreshToken = Jwts.builder()
                 .id(refreshTokenId)
                 .issuer(authProperties.getIssuerName())
@@ -126,7 +115,7 @@ public class TokensGenerator {
 
         UserAgentParser.UserAgentParseResult userAgentParseResult = UserAgentParser.parse(userAgent);
 
-        refreshTokenSessionService.save(RefreshTokenSession.builder()
+        RefreshTokenSession createdSession = refreshTokenSessionService.save(RefreshTokenSession.builder()
                 .id(UUID.randomUUID().toString())
                 .tokenId(refreshTokenId)
                 .userId(user.getId())
@@ -137,6 +126,19 @@ public class TokensGenerator {
                 .browser(userAgentParseResult.browser())
                 .build());
 
+        String accessToken = Jwts.builder()
+                .id(UUID.randomUUID().toString())
+                .issuer(authProperties.getIssuerName())
+                .issuedAt(jjwtClock.now())
+                .expiration(Date.from(clock.instant().plus(authProperties.getAccessTokenExpirationInMinutes(), ChronoUnit.MINUTES)))
+                .signWith(key.toPrivateKey())
+                .subject(user.getId().toString())
+                .claim(AuthConstants.Claims.AUTHORITIES, user.getAuthorities().stream()
+                        .map(GrantedAuthority::getAuthority)
+                        .collect(Collectors.joining(";")))
+                .claim(AuthConstants.Claims.SESSION_ID, createdSession.getId())
+                .compact();
+
         return Pair.of(accessToken, refreshToken);
     }
 
@@ -144,7 +146,12 @@ public class TokensGenerator {
      * May be used to actualize access token for user in case of some changes,
      * as example when user authorities were changed.
      */
-    public String generateAccessTokenForUser(User user) {
+    public String generateAccessTokenForUser(User user, String refreshToken, String userAgent) throws JOSEException {
+        Jws<Claims> parsedRefreshToken = tokensParser.parseToken(refreshToken);
+        UserAgentParser.UserAgentParseResult userAgentParseResult = UserAgentParser.parse(userAgent);
+        RefreshTokenSession refreshTokenSession = refreshTokenSessionService.getByTokenId(parsedRefreshToken.getPayload().getId());
+        validateRefreshToken(parsedRefreshToken, refreshTokenSession, userAgentParseResult);
+
         try {
             RSAKey key = rsaKeyProvider.getRsaKey();
 
@@ -158,6 +165,7 @@ public class TokensGenerator {
                     .claim(AuthConstants.Claims.AUTHORITIES, user.getAuthorities().stream()
                             .map(GrantedAuthority::getAuthority)
                             .collect(Collectors.joining(";")))
+                    .claim(AuthConstants.Claims.SESSION_ID, refreshTokenSession.getId())
                     .compact();
         } catch (Exception e) {
             log.error("Unexpected error while generating access token for user {}", user, e);

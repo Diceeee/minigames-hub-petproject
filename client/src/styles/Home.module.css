@@ -1,0 +1,31 @@
+/* Home.module.css - extracted from inline styles in Home.tsx */
+
+.homeContainer {
+  max-width: 700px;
+  margin: 2rem auto;
+  padding: 2.5rem;
+  background: var(--dark-bg, #181a20);
+  border-radius: 1.2rem;
+  box-shadow: 0 4px 32px var(--neon-blue-33, #00eaff33);
+  text-align: center;
+  color: var(--neon-blue, #00eaff);
+  font-family: var(--orbitron, Orbitron, sans-serif);
+  border: 2px solid var(--neon-pink, #ff00c8);
+}
+
+.title {
+  color: var(--neon-pink, #ff00c8);
+  font-size: 2.5rem;
+  text-shadow: 0 0 12px var(--neon-pink, #ff00c8);
+}
+
+.description {
+  font-size: 1.25rem;
+  margin: 2.5rem 0;
+  text-shadow: 0 0 8px var(--neon-blue, #00eaff);
+}
+
+.highlight {
+  color: var(--neon-pink, #ff00c8);
+  font-weight: bold;
+} 

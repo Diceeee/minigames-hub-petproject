@@ -20,9 +20,11 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.authorization.AuthorizationDecision;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -92,16 +94,19 @@ public class SecurityConfiguration {
                                                    AccessTokenCookieBearerTokenResolver accessTokenCookieBearerTokenResolver,
                                                    OAuth2LoginTokensGeneratingAuthenticationSuccessHandler oAuth2LoginTokensGeneratingAuthenticationSuccessHandler,
                                                    JwtAuthenticationConverter jwtAuthenticationConverter) throws Exception {
-        return httpSecurity.authorizeHttpRequests(
-                        authorizeRequests ->
-                                authorizeRequests
+        return httpSecurity
+                .authorizeHttpRequests(
+                        authorizeRequests ->  authorizeRequests
+                                        .requestMatchers(AuthConstants.Uris.REGISTER + "/**")
+                                        .access(((authentication, context)
+                                                -> new AuthorizationDecision(!authentication.get().isAuthenticated()
+                                                || authentication.get() instanceof AnonymousAuthenticationToken
+                                                || authentication.get().getAuthorities().isEmpty())))
                                         .requestMatchers("/css/**", "/js/**", "/images/**", "/favicon.ico",
                                                 "/api/public/email/verification/**",
                                                 "/.well-known/**",
-                                                "/api/public/**")
+                                                "/api/public/**", "/api/public/refresh")
                                         .permitAll()
-                                        .requestMatchers(AuthConstants.Uris.REGISTER + "/**")
-                                        .not().hasAnyRole(Roles.USER.getRoleWithoutPrefix(), Roles.ADMIN.getRoleWithoutPrefix())
                                         .anyRequest().hasAnyRole(Roles.USER.getRoleWithoutPrefix(), Roles.ADMIN.getRoleWithoutPrefix()))
                 .oauth2Login(configurer -> configurer
                         .loginPage(AuthConstants.Uris.LOGIN).permitAll()
@@ -125,11 +130,6 @@ public class SecurityConfiguration {
                 )
                 .csrf(AbstractHttpConfigurer::disable)
                 .build();
-    }
-
-    @Bean
-    public RefreshAccessTokenRedirectionFilter accessTokenRefreshFilter(RefreshValidator refreshValidator) {
-        return new RefreshAccessTokenRedirectionFilter(refreshValidator);
     }
 
 

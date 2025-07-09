@@ -1,0 +1,101 @@
+/* Layout.module.css - extracted from inline styles in Layout.tsx */
+
+.layout {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--dark-bg, #181a20);
+}
+
+.header {
+  background: var(--dark-header, #1a1c23);
+  color: var(--neon-blue, #00eaff);
+  padding: 0.5rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 2px 16px var(--neon-blue-33, #00eaff33);
+}
+
+.logo {
+  flex: 0 0 15%;
+  display: flex;
+  align-items: center;
+}
+
+.logoText {
+  font-weight: bold;
+  font-size: 1.7rem;
+  letter-spacing: 2px;
+  color: var(--neon-pink, #ff00c8);
+  text-shadow: 0 0 8px var(--neon-pink, #ff00c8);
+}
+
+.nav {
+  flex: 0 0 70%;
+  display: flex;
+  justify-content: center;
+  gap: 2.5rem;
+}
+
+.navLink {
+  color: var(--neon-blue, #00eaff);
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 1.15rem;
+  text-shadow: 0 0 6px var(--neon-blue, #00eaff);
+}
+
+.auth {
+  flex: 0 0 15%;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 1rem;
+}
+
+.welcome {
+  margin-right: 0.5rem;
+  color: var(--neon-blue, #00eaff);
+  text-shadow: 0 0 6px var(--neon-blue, #00eaff);
+}
+
+.logoutButton {
+  background: var(--neon-pink, #ff00c8);
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  font-weight: bold;
+  box-shadow: 0 0 8px var(--neon-pink, #ff00c8);
+}
+
+.loginLink {
+  color: var(--neon-blue, #00eaff);
+  text-decoration: none;
+  font-weight: bold;
+  margin-right: 1rem;
+  text-shadow: 0 0 6px var(--neon-blue, #00eaff);
+}
+
+.registerLink {
+  color: var(--neon-pink, #ff00c8);
+  text-decoration: none;
+  font-weight: bold;
+  text-shadow: 0 0 6px var(--neon-pink, #ff00c8);
+}
+
+.main {
+  flex: 1;
+  padding: 2rem;
+  background: var(--dark-bg, #181a20);
+}
+
+.footer {
+  background: var(--dark-header, #1a1c23);
+  color: var(--neon-blue, #00eaff);
+  text-align: center;
+  padding: 1rem;
+  box-shadow: 0 -2px 16px var(--neon-blue-33, #00eaff33);
+} 

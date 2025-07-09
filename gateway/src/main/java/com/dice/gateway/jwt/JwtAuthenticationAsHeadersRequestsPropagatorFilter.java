@@ -1,6 +1,7 @@
 package com.dice.gateway.jwt;
 
-import com.dice.gateway.Headers;
+import com.dice.gateway.core.Claims;
+import com.dice.gateway.core.Headers;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
@@ -30,12 +31,15 @@ public class JwtAuthenticationAsHeadersRequestsPropagatorFilter implements Globa
                 .map(Authentication::getPrincipal)
                 .filter(principal -> principal instanceof Jwt)
                 .cast(Jwt.class)
-                .flatMap(jwt -> chain.filter(exchange.mutate()
-                        .request(exchange.getRequest().mutate()
-                                .header(Headers.USER_ID, jwt.getSubject()).
-                                build())
-                        .build()))
-                .switchIfEmpty(chain.filter(exchange));
+                .map(jwt -> exchange.mutate()
+                        .request(exchange.getRequest()
+                                .mutate()
+                                .header(Headers.USER_ID, jwt.getSubject())
+                                .header(Headers.SESSION_ID, jwt.getClaimAsString(Claims.SESSION_ID))
+                                .build())
+                        .build())
+                .defaultIfEmpty(exchange)
+                .flatMap(chain::filter);
     }
 
     @Override

@@ -1,9 +1,12 @@
 package com.dice.auth.registration;
 
+import com.dice.auth.AuthConstants;
 import com.dice.auth.CookiesCreator;
 import com.dice.auth.core.exception.ApiError;
 import com.dice.auth.core.exception.ApiException;
+import com.nimbusds.jose.JOSEException;
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -12,16 +15,13 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @Validated
 @RestController
 @AllArgsConstructor
-@RequestMapping(path = "register")
+@RequestMapping(path = "api/public/register")
 public class RegistrationController {
 
     private final RegistrationService registrationService;
@@ -38,9 +38,15 @@ public class RegistrationController {
         }
     }
 
-    @PostMapping(consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-    public ResponseEntity<SuccessfulRegistrationResultResponse> processRegistration(@RequestBody @Valid RegistrationDto registration, HttpServletResponse response) {
-        RegistrationResult registrationResult = registrationService.register(registration);
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<SuccessfulRegistrationResultResponse> processRegistration(@RequestBody @Valid RegistrationDto registration,
+                                                                                    @CookieValue(value = AuthConstants.Cookies.REFRESH_TOKEN, required = false) String refreshToken,
+                                                                                    HttpServletResponse response,
+                                                                                    HttpServletRequest request) throws JOSEException {
+
+        RegistrationResult registrationResult = registrationService.register(registration, refreshToken,
+                request.getHeader(AuthConstants.Headers.USER_AGENT));
+
         if (registrationResult.isSuccessful()) {
             if (registrationResult.getUpdatedAccessToken() != null) {
                 Cookie accessTokenCookie = cookiesCreator.createAccessTokenCookie(registrationResult.getUpdatedAccessToken());

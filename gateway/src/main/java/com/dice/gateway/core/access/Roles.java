@@ -1,11 +1,11 @@
-package com.dice.auth.core.access;
+package com.dice.gateway.core.access;
 
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
 public enum Roles {
 
-    USER, ADMIN;
+    USER, ADMIN, EXPIRED;
 
     final String roleName;
 

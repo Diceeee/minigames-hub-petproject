@@ -9,6 +9,7 @@ public interface AuthConstants {
 
     interface Claims {
         String AUTHORITIES = "authorities";
+        String SESSION_ID = "sessionId";
     }
 
     interface Headers {
@@ -20,6 +21,6 @@ public interface AuthConstants {
         String PUBLIC_API_PREFIX = "/api/public";
         String REFRESH = PUBLIC_API_PREFIX + "/refresh";
         String LOGIN = PUBLIC_API_PREFIX + "/login";
-        String REGISTER = "/api/public/register";
+        String REGISTER = PUBLIC_API_PREFIX + "/register";
     }
 }

@@ -4,6 +4,7 @@ import com.dice.auth.core.properties.AuthConfigurationProperties;
 import com.dice.auth.token.TokensParser;
 import com.nimbusds.jose.JOSEException;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jws;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -45,6 +46,8 @@ public class RefreshValidator {
             return clock.instant().isAfter(refreshWindowInstant);
         } catch (JOSEException e) {
             log.warn("Unusual refresh allowed validation caused exception for access token:{}", accessToken, e);
+            return true;
+        } catch (ExpiredJwtException e) {
             return true;
         }
     }

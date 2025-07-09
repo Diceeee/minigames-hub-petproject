@@ -30,7 +30,7 @@ public class AuthConfigurationProperties {
                                        Boolean trustProxyHeaders, Boolean preferExternalIp, String frontendUrl) {
         this.refreshWindowInMinutes = refreshWindowInMinutes == null ? 5 : refreshWindowInMinutes;
         this.refreshTokenExpirationInDays = refreshTokenExpirationInDays == null ? 60 : refreshTokenExpirationInDays;
-        this.accessTokenExpirationInMinutes = accessTokenExpirationInMinutes == null ? 30 : accessTokenExpirationInMinutes;
+        this.accessTokenExpirationInMinutes = accessTokenExpirationInMinutes == null ? 10 : accessTokenExpirationInMinutes;
         this.verificationEmailRateLimitInMinutesPerUser = verificationEmailRateLimitInMinutesPerUser == null ? 5 : verificationEmailRateLimitInMinutesPerUser;
 
         this.rsaKeyId = rsaKeyId == null ? "authKeyId" : rsaKeyId;

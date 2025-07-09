@@ -60,13 +60,20 @@ eureka:
 logging:
   level:
     root: INFO
-    org.springframework.security: DEBUG
-    org.springframework.security.web: DEBUG
-    org.springframework.security.oauth2: DEBUG
-    org.springframework.security.oauth2.server.authorization: DEBUG
-    org.hibernate.cfg: DEBUG
-    org.springframework.transaction: DEBUG
-    org.hibernate.boot.model.naming: DEBUG
+    org.springframework.security: TRACE
+    org.springframework.security.web: TRACE
+    org.springframework.security.web.server: TRACE
+    org.springframework.security.authorization: TRACE
+    org.springframework.security.web.access: TRACE
+    org.springframework.security.web.access.intercept: TRACE
+    org.springframework.security.web.server.authorization: TRACE
+    org.springframework.security.web.server.authorization.AuthorizationWebFilter: TRACE
+    org.springframework.security.web.server.authorization.AuthorizationContext: TRACE
+    org.springframework.security.web.server.util.matcher: TRACE
+    org.springframework.security.authentication: TRACE
+    org.springframework.security.oauth2: TRACE
+    org.springframework.security.oauth2.server: TRACE
+    org.springframework.security.config: TRACE
 
 management:
   endpoints:

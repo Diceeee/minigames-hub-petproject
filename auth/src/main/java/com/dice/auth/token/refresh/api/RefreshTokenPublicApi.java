@@ -8,6 +8,7 @@ import com.dice.auth.core.util.AuthUtils;
 import com.dice.auth.token.TokensGenerator;
 import com.dice.auth.token.refresh.RefreshTokenSessionService;
 import com.dice.auth.token.refresh.RefreshValidator;
+import com.dice.auth.token.refresh.api.dto.RefreshTokensResponse;
 import com.dice.auth.token.refresh.dto.RefreshTokenSession;
 import com.nimbusds.jose.JOSEException;
 import jakarta.servlet.http.Cookie;
@@ -34,12 +35,16 @@ public class RefreshTokenPublicApi {
     private final CookiesCreator cookiesCreator;
 
     @PostMapping("/refresh")
-    public void refresh(
+    public ResponseEntity<RefreshTokensResponse> refresh(
             HttpServletRequest request,
             HttpServletResponse response,
-            @CookieValue("refresh_token") String refreshToken,
+            @CookieValue(value = "refresh_token", required = false) String refreshToken,
             @CookieValue(value = "access_token", required = false) String accessToken,
             @RequestHeader(AuthConstants.Headers.USER_AGENT) String userAgent) throws IOException {
+
+        if (refreshToken == null) {
+            throw new ApiException("Can't refresh without refresh token", ApiError.REFRESH_TOKEN_MISSING);
+        }
 
         try {
             if (!refreshValidator.validateRefreshAllowed(accessToken, refreshToken)) {
@@ -53,6 +58,8 @@ public class RefreshTokenPublicApi {
 
             response.addCookie(accessTokenCookie);
             response.addCookie(refreshTokenCookie);
+
+            return ResponseEntity.ok(new RefreshTokensResponse(accessAndRefreshTokens.getLeft(), accessAndRefreshTokens.getRight()));
         } catch (JOSEException e) {
             throw new ApiException("JOSE exception during refresh, message: " + e.getMessage(), ApiError.UNKNOWN);
         }

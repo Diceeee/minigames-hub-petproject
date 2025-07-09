@@ -1,0 +1,85 @@
+/* Login.module.css - extracted from inline styles in Login.tsx */
+
+.loginContainer {
+  max-width: 400px;
+  margin: 2rem auto;
+  padding: 2.5rem;
+  background: var(--dark-bg, #181a20);
+  border-radius: 1.2rem;
+  box-shadow: 0 4px 32px var(--neon-blue-33, #00eaff33);
+  color: var(--neon-blue, #00eaff);
+  font-family: var(--orbitron, Orbitron, sans-serif);
+  border: 2px solid var(--neon-pink, #ff00c8);
+}
+
+.title {
+  color: var(--neon-pink, #ff00c8);
+  text-shadow: 0 0 8px var(--neon-pink, #ff00c8);
+}
+
+.inputContainer {
+  margin-bottom: 1rem;
+}
+
+.input {
+  width: 100%;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--neon-blue, #00eaff);
+  background: var(--dark-bg, #181a20);
+  color: var(--neon-blue, #00eaff);
+  font-weight: bold;
+  font-size: 1.05rem;
+}
+
+.error {
+  color: var(--neon-red, #ff00c8);
+  margin-bottom: 1rem;
+  font-weight: bold;
+}
+
+.submitButton {
+  width: 100%;
+  padding: 0.75rem;
+  background: var(--neon-pink, #ff00c8);
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  font-size: 1.1rem;
+  font-weight: bold;
+  box-shadow: 0 0 8px var(--neon-pink, #ff00c8);
+}
+
+.orLine {
+  margin: 2rem 0;
+  border-bottom: 1px solid var(--neon-blue-55, #00eaff55);
+  text-align: center;
+  position: relative;
+}
+
+.orText {
+  position: relative;
+  top: 12px;
+  background: var(--dark-bg, #181a20);
+  padding: 0 1rem;
+  color: var(--neon-blue, #00eaff);
+  font-weight: bold;
+  font-size: 1rem;
+}
+
+.googleButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: white;
+  color: #222;
+  border: none;
+  border-radius: 0.5rem;
+  padding: 0.75rem;
+  font-weight: bold;
+  font-size: 1.1rem;
+  box-shadow: 0 0 8px var(--neon-blue, #00eaff);
+  text-decoration: none;
+  transition: background 0.2s;
+  cursor: pointer;
+} 

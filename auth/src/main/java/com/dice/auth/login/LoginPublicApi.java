@@ -95,7 +95,7 @@ public class LoginPublicApi {
     /**
      * Performs logout. Refresh path part is important to get refresh token cookie.
      */
-    @PostMapping("/refresh/logout")
+    @PostMapping("/logout")
     public ResponseEntity<Void> logout(HttpServletResponse response, HttpServletRequest request) {
         tokensLogoutHandler.logout(request, response);
         return ResponseEntity.noContent().build();

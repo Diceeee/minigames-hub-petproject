@@ -45,4 +45,8 @@ public class User implements UserDetails {
                 && getUsername() != null
                 && getPassword() != null;
     }
+
+    public boolean inEmailVerificationProcess() {
+        return getEmail() != null && getUsername() != null && getPassword() != null && !isEmailVerified();
+    }
 }

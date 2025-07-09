@@ -1,6 +1,5 @@
 package com.dice.gateway.core;
 
-import com.dice.gateway.Headers;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
@@ -9,6 +8,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
+import java.util.List;
+import java.util.Objects;
+
 /**
  * Removes headers that are used for internal purposes from requests if they are present, such as User Id header.
  */
@@ -16,22 +18,25 @@ import reactor.core.publisher.Mono;
 @Component
 public class HeadersSecurityFilter implements GlobalFilter, Ordered {
 
+    private static final List<String> FORBIDDEN_HEADERS = List.of(Headers.SESSION_ID, Headers.USER_ID);
+
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
-        if (exchange.getRequest().getHeaders().containsKey(Headers.USER_ID)) {
-            log.warn("Forbidden '{}' header with value '{}' found and filtered from request:\n{}",
-                    Headers.USER_ID, exchange.getRequest().getHeaders().get(Headers.USER_ID), exchange.getRequest());
+        FORBIDDEN_HEADERS.stream()
+                .filter(forbiddenHeader -> exchange.getRequest().getHeaders().containsKey(forbiddenHeader))
+                .map(forbiddenHeader -> String.join("=", forbiddenHeader, Objects.requireNonNull(exchange.getRequest().getHeaders().get(forbiddenHeader)).toString()))
+                .reduce((s1, s2) -> String.join(", ", s1, s2))
+                .ifPresent(logMessage -> log.warn("Possible try of forbidden headers manual injection detected for request: {}", logMessage));
 
-            ServerWebExchange exchangeWithRemovedUserIdHeader = exchange.mutate()
-                    .request(exchange.getRequest().mutate()
-                            .headers(headers -> headers.remove(Headers.USER_ID))
-                            .build())
-                    .build();
+        ServerWebExchange exchangeWithRemovedUserHeaders = exchange.mutate()
+                .request(exchange.getRequest().mutate()
+                        .headers(headers -> headers
+                                .remove(Headers.USER_ID)
+                                .remove(Headers.SESSION_ID))
+                        .build())
+                .build();
 
-            return chain.filter(exchangeWithRemovedUserIdHeader);
-        } else {
-            return chain.filter(exchange);
-        }
+        return chain.filter(exchangeWithRemovedUserHeaders);
     }
 
     @Override

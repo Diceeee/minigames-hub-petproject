@@ -37,3 +37,13 @@ gateway:
       uri: http://localhost:5000
     frontend:
       uri: http://localhost:3000
+
+logging:
+  level:
+    org.springframework.security: TRACE
+    org.springframework.security.web.server: TRACE
+    org.springframework.security.authorization: TRACE
+    org.springframework.security.web.server.authorization: TRACE
+    org.springframework.security.web.server.authorization.AuthorizationWebFilter: TRACE
+    org.springframework.security.web.server.authorization.AuthorizationContext: TRACE
+    org.springframework.security.web.server.util.matcher: TRACE

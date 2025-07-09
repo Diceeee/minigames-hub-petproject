@@ -1,0 +1,16 @@
+/* EmailVerification.module.css - extracted from inline styles in EmailVerification.tsx */
+
+.container {
+  max-width: 400px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background: white;
+  border-radius: 1rem;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+  text-align: center;
+}
+
+.message {
+  margin: 1rem 0;
+  color: #2d3748;
+} 

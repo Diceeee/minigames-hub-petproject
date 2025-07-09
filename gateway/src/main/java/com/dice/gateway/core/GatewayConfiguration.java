@@ -1,11 +1,17 @@
 package com.dice.gateway.core;
 
+import com.dice.gateway.core.access.Roles;
 import com.dice.gateway.jwt.AccessTokenCookieBearerTokenConverter;
+import com.dice.gateway.jwt.LimitedAccessOnExpirationJwtAuthenticationConverter;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+import org.springframework.security.authorization.AuthorityAuthorizationDecision;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
+import org.springframework.security.oauth2.core.OAuth2TokenValidator;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.jwt.JwtIssuerValidator;
 import org.springframework.security.oauth2.jwt.NimbusReactiveJwtDecoder;
 import org.springframework.security.oauth2.jwt.ReactiveJwtDecoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
@@ -17,6 +23,8 @@ import org.springframework.security.web.server.csrf.ServerCsrfTokenRequestAttrib
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.reactive.CorsWebFilter;
 import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
+
+import java.time.Clock;
 
 @Configuration
 @EnableConfigurationProperties(GatewayProperties.class)
@@ -39,11 +47,19 @@ public class GatewayConfiguration {
 
     @Bean
     public ReactiveJwtDecoder reactiveJwtDecoder(GatewayProperties gatewayProperties) {
-        return NimbusReactiveJwtDecoder.withJwkSetUri(gatewayProperties.getServices().getAuth().getUri() + "/.well-known/jwks.json").build();
+        NimbusReactiveJwtDecoder decoder = NimbusReactiveJwtDecoder
+                .withJwkSetUri(gatewayProperties.getServices().getAuth().getUri() + "/.well-known/jwks.json")
+                .build();
+
+        String issuer = gatewayProperties.getServices().getAuth().getUri();
+        OAuth2TokenValidator<Jwt> issuerValidator = new JwtIssuerValidator(issuer);
+        decoder.setJwtValidator(issuerValidator);
+
+        return decoder;
     }
 
     @Bean
-    public ReactiveJwtAuthenticationConverterAdapter reactiveJwtAuthenticationConverterAdapter() {
+    public ReactiveJwtAuthenticationConverterAdapter reactiveJwtAuthenticationConverterAdapter(Clock clock) {
         JwtGrantedAuthoritiesConverter grantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
         grantedAuthoritiesConverter.setAuthorityPrefix("");
         grantedAuthoritiesConverter.setAuthoritiesClaimName("authorities");
@@ -51,7 +67,9 @@ public class GatewayConfiguration {
 
         JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
         jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(grantedAuthoritiesConverter);
-        return new ReactiveJwtAuthenticationConverterAdapter(jwtAuthenticationConverter);
+
+        LimitedAccessOnExpirationJwtAuthenticationConverter limitedAccessOnExpirationJwtAuthenticationConverter = new LimitedAccessOnExpirationJwtAuthenticationConverter(clock, jwtAuthenticationConverter);
+        return new ReactiveJwtAuthenticationConverterAdapter(limitedAccessOnExpirationJwtAuthenticationConverter);
     }
 
     @Bean
@@ -65,10 +83,13 @@ public class GatewayConfiguration {
                         }
                 )
                 .authorizeExchange(authorize -> authorize
-                        .pathMatchers("/auth/login/**", "/auth/register/**", "/css/**", "/js/**", "/images/**", "/favicon.ico",
-                                "/auth/oauth2/authorization/**", "/csrf", "/auth/refresh/**")
+                        .pathMatchers("/auth/refresh")
+                        .authenticated()
+                        .pathMatchers("/auth/login/**", "/csrf", "/auth/register/**", "/css/**", "/js/**", "/images/**", "/favicon.ico")
                         .permitAll()
-                        .anyExchange().authenticated()
+                        .pathMatchers("/auth/user/**", "/auth/oauth2/authorization/**", "/auth/refresh/**", "/auth/email/verification/**")
+                        .hasAnyRole(Roles.USER.getRoleWithoutPrefix(), Roles.ADMIN.getRoleWithoutPrefix())
+                        .anyExchange().permitAll()
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2
                         .jwt(jwtConfigurer -> jwtConfigurer
@@ -77,5 +98,10 @@ public class GatewayConfiguration {
                         .bearerTokenConverter(accessTokenCookieBearerTokenConverter)
                 );
         return http.build();
+    }
+
+    @Bean
+    public Clock clock() {
+        return Clock.systemUTC();
     }
 }
