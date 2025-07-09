@@ -27,6 +27,9 @@ const Layout: React.FC = () => {
         <nav className={styles.nav}>
           <Link to="/" className={styles.navLink}>Home</Link>
           <Link to="/games" className={styles.navLink}>Games</Link>
+          {user && user.registered && (
+            <Link to="/dashboard" className={styles.navLink}>Dashboard</Link>
+          )}
         </nav>
         {/* Right: Auth/Profile */}
         <div className={styles.auth}>

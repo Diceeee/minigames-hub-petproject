@@ -31,10 +31,10 @@ const Register: React.FC = () => {
 
                 if (!successRegistrationResponse.emailVerified) {
                     setSuccess('Registration successful! Please check your email to verify your account.');
-                    setTimeout(() => navigate('/login'), 2000);
+                    navigate('/login');
                 } else {
                     setSuccess('Registration successful!');
-                    setTimeout(() => navigate('/'), 1000);
+                    navigate('/')
                 }
             }
         } catch (e: any) {
