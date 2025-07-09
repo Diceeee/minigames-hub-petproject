@@ -6,19 +6,16 @@ import com.dice.auth.core.properties.AuthConfigurationProperties;
 import com.dice.auth.email.EmailPasswordAuthenticationProvider;
 import com.dice.auth.token.AccessTokenCookieBearerTokenResolver;
 import com.dice.auth.token.OAuth2LoginTokensGeneratingAuthenticationSuccessHandler;
-import com.dice.auth.token.refresh.RefreshAccessTokenRedirectionFilter;
-import com.dice.auth.token.refresh.RefreshValidator;
 import com.nimbusds.jose.jwk.JWKSet;
-import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -38,11 +35,8 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtGra
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
-import java.security.NoSuchAlgorithmException;
-import java.security.interfaces.RSAPrivateKey;
-import java.security.interfaces.RSAPublicKey;
+import java.io.IOException;
+import java.text.ParseException;
 import java.util.List;
 import java.util.Locale;
 
@@ -51,20 +45,8 @@ import java.util.Locale;
 public class SecurityConfiguration {
 
     @Bean
-    public JWKSet jwkSet(AuthConfigurationProperties authProperties) throws NoSuchAlgorithmException {
-        KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
-        keyPairGenerator.initialize(2048);
-
-        KeyPair keyPair = keyPairGenerator.generateKeyPair();
-        RSAPublicKey publicKey = (RSAPublicKey) keyPair.getPublic();
-        RSAPrivateKey privateKey = (RSAPrivateKey) keyPair.getPrivate();
-
-        RSAKey rsaKey = new RSAKey.Builder(publicKey)
-                .privateKey(privateKey)
-                .keyID(authProperties.getRsaKeyId())
-                .build();
-
-        return new JWKSet(rsaKey);
+    public JWKSet jwkSet() throws IOException, ParseException {
+        return JWKSet.load(new ClassPathResource("secrets/jwks.json").getInputStream());
     }
 
     @Bean
@@ -96,18 +78,18 @@ public class SecurityConfiguration {
                                                    JwtAuthenticationConverter jwtAuthenticationConverter) throws Exception {
         return httpSecurity
                 .authorizeHttpRequests(
-                        authorizeRequests ->  authorizeRequests
-                                        .requestMatchers(AuthConstants.Uris.REGISTER + "/**")
-                                        .access(((authentication, context)
-                                                -> new AuthorizationDecision(!authentication.get().isAuthenticated()
-                                                || authentication.get() instanceof AnonymousAuthenticationToken
-                                                || authentication.get().getAuthorities().isEmpty())))
-                                        .requestMatchers("/css/**", "/js/**", "/images/**", "/favicon.ico",
-                                                "/api/public/email/verification/**",
-                                                "/.well-known/**",
-                                                "/api/public/**", "/api/public/refresh")
-                                        .permitAll()
-                                        .anyRequest().hasAnyRole(Roles.USER.getRoleWithoutPrefix(), Roles.ADMIN.getRoleWithoutPrefix()))
+                        authorizeRequests -> authorizeRequests
+                                .requestMatchers(AuthConstants.Uris.REGISTER + "/**")
+                                .access(((authentication, context)
+                                        -> new AuthorizationDecision(!authentication.get().isAuthenticated()
+                                        || authentication.get() instanceof AnonymousAuthenticationToken
+                                        || authentication.get().getAuthorities().isEmpty())))
+                                .requestMatchers("/css/**", "/js/**", "/images/**", "/favicon.ico",
+                                        "/api/public/email/verification/**",
+                                        "/.well-known/**",
+                                        "/api/public/**", "/api/public/refresh")
+                                .permitAll()
+                                .anyRequest().hasAnyRole(Roles.USER.getRoleWithoutPrefix(), Roles.ADMIN.getRoleWithoutPrefix()))
                 .oauth2Login(configurer -> configurer
                         .loginPage(AuthConstants.Uris.LOGIN).permitAll()
                         .authorizationEndpoint(authorization ->
