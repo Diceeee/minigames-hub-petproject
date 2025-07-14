@@ -34,7 +34,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({children}
         setError(null);
 
         try {
-            const res = await api.get<User>('/auth/user/me', {withCredentials: true});
+            const res = await api.get<User>('/public/auth/user/me', {withCredentials: true});
             tryRefreshOnAccessDenied.current = true;
             setUser(res.data);
         } catch (e: unknown) {
@@ -59,7 +59,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({children}
 
     const refresh = fetchProfile;
     const logout = async () => {
-        await api.post('auth/logout', null, {withCredentials: true});
+        await api.post('/public/auth/logout', null, {withCredentials: true});
         tryRefreshOnAccessDenied.current = false;
         setUser(null);
     };

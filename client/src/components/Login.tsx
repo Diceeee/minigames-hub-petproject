@@ -5,6 +5,7 @@ import styles from '../styles/Login.module.css';
 import {ErrorCode} from "../api/types";
 import {GoogleLogo} from "../constants/svg-logos";
 import {useApi} from "./contexts/ApiContext";
+import {API_PUBLIC_URL} from "../api/urls";
 
 const Login: React.FC = () => {
   const { refresh } = useAuth();
@@ -20,7 +21,7 @@ const Login: React.FC = () => {
     setLoading(true);
     setError(null);
     try {
-      const res = await api.post('/auth/login', { principal, password }, {
+      const res = await api.post('/public/auth/login', { principal, password }, {
         withCredentials: true,
         headers: { 'Content-Type': 'application/json' }
       });
@@ -76,7 +77,7 @@ const Login: React.FC = () => {
       <div className={styles.orLine}>
         <span className={styles.orText}>or</span>
       </div>
-      <a href="http://localhost:9000/auth/oauth2/authorization/google" className={styles.googleButton}>
+      <a href={`${API_PUBLIC_URL}/auth/oauth2/authorization/google`} className={styles.googleButton}>
         <GoogleLogo />
         Login with Google
       </a>

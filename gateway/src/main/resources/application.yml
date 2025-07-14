@@ -9,13 +9,27 @@ spring:
       server:
         webflux:
           routes:
-            - id: auth-service
+            - id: auth-service-public
               uri: 'lb://${gateway.services.auth.service-name}'
               predicates:
-                - Path=/auth/**
+                - Path=/public/auth/**
               filters:
                 - StripPrefix=1
                 - PrefixPath=/api/public
+            - id: game-clicker-service-public
+              uri: 'lb://${gateway.services.game-clicker.service-name}'
+              predicates:
+                - Path=/public/game-clicker/**
+              filters:
+                - StripPrefix=1
+                - PrefixPath=/api/public
+            - id: game-clicker-service-admin
+              uri: 'lb://${gateway.services.game-clicker.service-name}'
+              predicates:
+                - Path=/admin/game-clicker/**
+              filters:
+                - StripPrefix=1
+                - PrefixPath=/api/admin
 
 eureka:
   client:
@@ -36,8 +50,20 @@ gateway:
     auth:
       uri: http://localhost:5000
       service-name: auth-service
+    game-clicker:
+      uri: http://localhost:5001
+      service-name: game-clicker
     frontend:
       uri: http://localhost:3000
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "health,info,loggers,beans,metrics"
+  endpoint:
+    health:
+      show-details: ALWAYS
 
 logging:
   level:

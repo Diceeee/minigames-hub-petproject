@@ -1,6 +1,6 @@
 import React, {createContext, RefObject, useCallback, useContext, useEffect, useMemo, useRef} from 'react';
 import axios, {AxiosInstance, InternalAxiosRequestConfig} from "axios";
-import {API_BASE_URL} from "../../api/urls";
+import {API_PUBLIC_URL} from "../../api/urls";
 import Cookies from "js-cookie";
 
 type ApiContextType = {
@@ -35,7 +35,7 @@ export const ApiProvider: React.FC<{ children: React.ReactNode }> = ({children})
         ) {
             try {
                 tryRefreshOnAccessDenied.current = false;
-                await api.post('/auth/refresh', null);
+                await api.post('/public/auth/refresh', null);
                 tryRefreshOnAccessDenied.current = true;
                 return api(error.config);
             } catch (e) {
@@ -48,7 +48,7 @@ export const ApiProvider: React.FC<{ children: React.ReactNode }> = ({children})
     // Create Axios instance and add interceptors only once
     const api = useMemo(() => {
         const instance = axios.create({
-            baseURL: API_BASE_URL,
+            baseURL: API_PUBLIC_URL,
             withCredentials: true,
         });
         // Request interceptor uses xsrfRef

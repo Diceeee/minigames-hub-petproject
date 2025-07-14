@@ -11,6 +11,7 @@ public class GatewayProperties {
     @Data
     public static class Services {
         private ServiceConfig auth;
+        private ServiceConfig gameClicker;
         private ServiceConfig frontend;
     }
 

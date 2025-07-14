@@ -1,18 +1,16 @@
 server:
-  port: 8761
+  port: 5001
 
 eureka:
-  environment: dev
-  instance:
-    hostname: localhost
   client:
-    register-with-eureka: false
-    fetch-registry: false
     service-url:
       defaultZone: http://localhost:8761/eureka/
-  server:
-    enable-self-preservation: false
-    eviction-interval-timer-in-ms: 1000
+    register-with-eureka: true
+    fetch-registry: true
+    registry-fetch-interval-seconds: 30
+  instance:
+    prefer-ip-address: true
+    instance-id: ${spring.application.name}:${server.port}
 
 management:
   endpoints:

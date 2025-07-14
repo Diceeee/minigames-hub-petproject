@@ -5,6 +5,7 @@ import {ErrorCode} from "../api/types";
 import {useAuth} from "./contexts/AuthContext";
 import {GoogleLogo} from "../constants/svg-logos";
 import {useApi} from "./contexts/ApiContext";
+import {API_PUBLIC_URL} from "../api/urls";
 
 const Register: React.FC = () => {
     const navigate = useNavigate();
@@ -24,7 +25,7 @@ const Register: React.FC = () => {
         setSuccess(null);
 
         try {
-            const res = await api.post('/auth/register', {username, email, password});
+            const res = await api.post('/public/auth/register', {username, email, password});
             if (res.status === 200) {
                 const successRegistrationResponse: { emailVerified: boolean } = res.data;
                 auth.refresh();
@@ -57,7 +58,7 @@ const Register: React.FC = () => {
         setError(null);
         setSuccess(null);
 
-        await api.post('/auth/register/cancel', null);
+        await api.post('/public/auth/register/cancel', null);
         setLoading(false);
 
         auth.refresh();
@@ -114,7 +115,7 @@ const Register: React.FC = () => {
                 </button>
             }
             {!auth.user &&
-                <a href="http://localhost:9000/auth/oauth2/authorization/google" className={styles.googleButton}>
+                <a href={`${API_PUBLIC_URL}/auth/oauth2/authorization/google`} className={styles.googleButton}>
                     <GoogleLogo />
                     Register with Google
                 </a>
