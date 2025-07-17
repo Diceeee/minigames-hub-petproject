@@ -31,7 +31,7 @@ public class AuthConfigurationProperties {
         this.refreshWindowInMinutes = refreshWindowInMinutes == null ? 5 : refreshWindowInMinutes;
         this.refreshTokenExpirationInDays = refreshTokenExpirationInDays == null ? 60 : refreshTokenExpirationInDays;
         this.accessTokenExpirationInMinutes = accessTokenExpirationInMinutes == null ? 15 : accessTokenExpirationInMinutes;
-        this.verificationEmailRateLimitInMinutesPerUser = verificationEmailRateLimitInMinutesPerUser == null ? 5 : verificationEmailRateLimitInMinutesPerUser;
+        this.verificationEmailRateLimitInMinutesPerUser = verificationEmailRateLimitInMinutesPerUser == null ? 1 : verificationEmailRateLimitInMinutesPerUser;
 
         this.rsaKeyId = rsaKeyId == null ? "authKeyId" : rsaKeyId;
         this.issuerName = issuerName == null ? "http://localhost:5000" : issuerName;

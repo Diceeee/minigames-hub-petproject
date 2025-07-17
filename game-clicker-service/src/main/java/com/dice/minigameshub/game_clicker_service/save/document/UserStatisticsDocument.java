@@ -7,7 +7,7 @@ import lombok.Value;
 @Builder(toBuilder = true)
 public class UserStatisticsDocument {
 
-    Long totalClicks;
-    Long totalCurrencyEarned;
-    Long totalCurrencyWasted;
+    long totalClicks;
+    long totalCurrencyEarned;
+    long totalCurrencyWasted;
 }

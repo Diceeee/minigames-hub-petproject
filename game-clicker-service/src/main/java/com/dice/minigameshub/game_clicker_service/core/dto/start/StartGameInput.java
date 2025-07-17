@@ -1,7 +1,11 @@
 package com.dice.minigameshub.game_clicker_service.core.dto.start;
 
 import com.dice.minigameshub.game_clicker_service.common.UserDetails;
+import lombok.Builder;
+import lombok.Value;
 
-public record StartGameInput(UserDetails userDetails) {
-
+@Value
+@Builder
+public class StartGameInput {
+    UserDetails userDetails;
 }

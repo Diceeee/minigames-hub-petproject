@@ -11,6 +11,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
@@ -57,7 +58,7 @@ public class EmailVerificationService {
         return EmailVerificationResult.successful(verifiedUser);
     }
 
-    @Transactional(isolation = Isolation.READ_COMMITTED, rollbackFor = EmailWasNotSentException.class)
+    @Transactional(isolation = Isolation.READ_COMMITTED)
     public void createOrRecreateEmailVerificationTokenForUser(Long userId) {
         User user = userService.getUserById(userId);
         if (user.isEmailVerified()) {
@@ -92,7 +93,8 @@ public class EmailVerificationService {
         }
     }
 
-    private void sendVerificationEmail(User user, String tokenId) throws EmailWasNotSentException {
+    @Async
+    void sendVerificationEmail(User user, String tokenId) {
         try {
             String emailHtmlText = String.format("""
                     <html>
@@ -119,7 +121,6 @@ public class EmailVerificationService {
             String message = String.format("Couldn't send verification email for user %d to email %s",
                     user.getId(), user.getEmail());
             log.error(message, e);
-            throw new EmailWasNotSentException(message);
         }
     }
 }

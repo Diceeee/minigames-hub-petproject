@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class GlobalApiExceptionHandler {
 
     @ExceptionHandler
-    public ResponseEntity<ApiErrorResponse> handleApiException(ApiException apiException) {
-        log.info("Api exception occurred", apiException);
-        return ResponseEntity.badRequest().body(new ApiErrorResponse(apiException.getMessage(), apiException.getApiError().getErrorCode()));
+    public ResponseEntity<ApiErrorResponse> handleApiException(ServiceException serviceException) {
+        log.info("Api exception occurred", serviceException);
+        return ResponseEntity.badRequest().body(new ApiErrorResponse(serviceException.getMessage(), serviceException.getError().getErrorCode()));
     }
 }

@@ -25,51 +25,53 @@ public class CoreGameService {
     private final CoreGameMapper coreGameMapper;
 
     public ClicksProcessResult processClicks(ClicksProcessInput clicksInput) {
-        UserSaveDocument userSaveDocument = userSaveService.getUserSave(clicksInput.userDetails().getUserId());
+        UserSaveDocument userSaveDocument = userSaveService.getUserSave(clicksInput.getUserDetails().getUserId());
         GameConfig gameConfig = gameConfigService.getGameConfig();
 
-        long currencyEarned = (long) gameConfig.getBasicCurrencyGainPerClick() * clicksInput.clicks();
-        UserSaveDocument processedUserSaveDocument = userSaveDocument.toBuilder()
-                .currency(userSaveDocument.getCurrency() + currencyEarned)
-                .build();
+        long currencyBefore = userSaveDocument.getCurrency();
+        long currencyEarned = (long) gameConfig.getBasicCurrencyGainPerClick() * clicksInput.getClicks();
 
-        userSaveService.saveDocument(processedUserSaveDocument);
-        return new ClicksProcessResult(userSaveDocument.getCurrency(), processedUserSaveDocument.getCurrency());
+        userSaveDocument.setCurrency(currencyBefore + currencyEarned);
+        userSaveService.saveDocument(userSaveDocument);
+
+        return ClicksProcessResult.builder()
+                .currencyBeforeClicks(currencyBefore)
+                .currencyAfterClicks(userSaveDocument.getCurrency())
+                .build();
     }
 
     public StartGameResult startGame(StartGameInput startGameInput) {
         GameConfig gameConfig = gameConfigService.getGameConfig();
 
-        if (userSaveService.isUserGameSaveExists(startGameInput.userDetails().getUserId())) {
-            UserSaveDocument userSaveDocument = userSaveService.getUserSave(startGameInput.userDetails().getUserId());
+        if (userSaveService.isUserGameSaveExists(startGameInput.getUserDetails().getUserId())) {
+            UserSaveDocument userSaveDocument = userSaveService.getUserSave(startGameInput.getUserDetails().getUserId());
 
-            return new StartGameResult(
-                    coreGameMapper.mapDocument(userSaveDocument.getUserStatisticsDocument()),
-                    userSaveDocument.getPurchasedItemsIds(),
-                    gameConfig.getBasicCurrencyGainPerClick(),
-                    userSaveDocument.getCurrency(),
-                    false
-            );
+            return StartGameResult.builder()
+                    .basicCurrencyGainPerClick(gameConfig.getBasicCurrencyGainPerClick())
+                    .currency(userSaveDocument.getCurrency())
+                    .currencyIncomePerClick(userSaveDocument.getCurrencyIncomePerClick())
+                    .currencyIncomePerMinute(userSaveDocument.getCurrencyIncomePerMinute())
+                    .userStatistics(coreGameMapper.mapDocument(userSaveDocument.getUserStatistics()))
+                    .purchasedItemsIds(userSaveDocument.getPurchasedItemsIds())
+                    .firstStart(false)
+                    .build();
         }
 
         UserSaveDocument createdSaveDocument = UserSaveDocument.builder()
-                .id(startGameInput.userDetails().getUserId())
+                .id(startGameInput.getUserDetails().getUserId())
                 .purchasedItemsIds(Collections.emptyList())
-                .currency(0L)
-                .userStatisticsDocument(UserStatisticsDocument.builder()
-                        .totalClicks(0L)
-                        .totalCurrencyEarned(0L)
-                        .totalCurrencyWasted(0L)
-                        .build())
+                .userStatistics(UserStatisticsDocument.builder().build())
                 .build();
 
         UserSaveDocument savedDocument = userSaveService.saveDocument(createdSaveDocument);
-        return new StartGameResult(
-                coreGameMapper.mapDocument(savedDocument.getUserStatisticsDocument()),
-                savedDocument.getPurchasedItemsIds(),
-                gameConfig.getBasicCurrencyGainPerClick(),
-                savedDocument.getCurrency(),
-                true
-        );
+        return StartGameResult.builder()
+                .basicCurrencyGainPerClick(gameConfig.getBasicCurrencyGainPerClick())
+                .currency(savedDocument.getCurrency())
+                .currencyIncomePerClick(savedDocument.getCurrencyIncomePerClick())
+                .currencyIncomePerMinute(savedDocument.getCurrencyIncomePerMinute())
+                .userStatistics(coreGameMapper.mapDocument(savedDocument.getUserStatistics()))
+                .purchasedItemsIds(savedDocument.getPurchasedItemsIds())
+                .firstStart(true)
+                .build();
     }
 }

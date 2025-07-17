@@ -1,13 +1,21 @@
 package com.dice.minigameshub.game_clicker_service.core.api.dto.start;
 
-import com.dice.minigameshub.game_clicker_service.core.api.dto.UserStatisticsResponse;
+import com.dice.minigameshub.game_clicker_service.core.dto.UserStatistics;
+import lombok.Builder;
+import lombok.Value;
 
 import java.util.List;
 
-public record StartGameResponse(UserStatisticsResponse userStatistics,
-                                List<String> purchasedItemsIds,
-                                Integer currencyGainPerClick,
-                                Long currency,
-                                boolean firstStart) {
+@Value
+@Builder
+public class StartGameResponse {
+    int basicCurrencyGainPerClick;
+    long currency;
+    long currencyIncomePerClick;
+    long currencyIncomePerMinute;
 
+    boolean firstStart;
+
+    UserStatistics userStatistics;
+    List<String> purchasedItemsIds;
 }

@@ -1,7 +1,12 @@
 package com.dice.minigameshub.game_clicker_service.core.dto;
 
-public record UserStatistics(Long totalClicks,
-                             Long totalCurrencyEarned,
-                             Long totalCurrencyWasted) {
+import lombok.Builder;
+import lombok.Value;
 
+@Value
+@Builder
+public class UserStatistics {
+    Long totalClicks;
+    Long totalCurrencyEarned;
+    Long totalCurrencyWasted;
 }

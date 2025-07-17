@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public enum ApiError {
+public enum Error {
 
     UNKNOWN(-1),
 
