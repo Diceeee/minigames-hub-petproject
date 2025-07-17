@@ -3,9 +3,11 @@ package com.dice.auth.user;
 import com.dice.auth.user.dto.User;
 import com.dice.auth.user.exception.UserNotFoundException;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @Transactional
 @AllArgsConstructor
@@ -18,6 +20,12 @@ public class UserService {
     public User getUserById(Long userId) throws UserNotFoundException {
         return userMapper.mapUserEntity(userRepository.findById(userId)
                 .orElseThrow(() -> UserNotFoundException.forId(userId)));
+    }
+
+    @Transactional
+    public void removeUserById(Long userId) {
+        log.info("Deleting user with id {}", userId);
+        userRepository.deleteById(userId);
     }
 
     @Transactional(readOnly = true, noRollbackFor = UserNotFoundException.class)

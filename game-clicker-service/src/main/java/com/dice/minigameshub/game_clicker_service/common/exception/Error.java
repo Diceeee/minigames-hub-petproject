@@ -11,7 +11,13 @@ public enum Error {
 
     // --- GENERAL ---
     NOT_ENOUGH_CURRENCY(1),
-    LEVEL_IS_TOO_LOW(2),
+
+    /**
+     * User tries to perform action from session that differs from last session that was used to start game.
+     * Only one active session is allowed per game.
+     * If start game performed from other session, previous session will become inactive.
+     */
+    ACTIVE_SESSION_MISMATCH(2),
 
     // --- ITEMS ---
     ITEM_NOT_FOUND(100),

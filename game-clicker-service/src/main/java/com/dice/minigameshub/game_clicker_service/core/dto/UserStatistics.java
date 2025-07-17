@@ -8,5 +8,5 @@ import lombok.Value;
 public class UserStatistics {
     Long totalClicks;
     Long totalCurrencyEarned;
-    Long totalCurrencyWasted;
+    Long totalCurrencySpent;
 }

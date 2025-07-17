@@ -75,6 +75,7 @@ public class LoginPublicApi {
             response.addCookie(accessTokenCookie);
             response.addCookie(refreshTokenCookie);
 
+            log.info("User {} successfully logged in", user.getId());
             return ResponseEntity.ok(new LoginResponse(
                 accessAndRefreshTokens.getLeft(),
                 accessAndRefreshTokens.getRight()

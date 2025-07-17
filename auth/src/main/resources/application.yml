@@ -15,7 +15,7 @@ spring:
         registration:
           google:
             client-id: 761706611693-vu8eit6acq8ooa6c897i7ff3h25kcdnj.apps.googleusercontent.com
-            redirect-uri: "http://localhost:9000/auth/login/oauth2/code/google"
+            redirect-uri: "http://localhost:9000/public/auth/login/oauth2/code/google"
             scope:
               - openid
               - profile

@@ -10,7 +10,7 @@ import {API_PUBLIC_URL} from "../api/urls";
 const Register: React.FC = () => {
     const navigate = useNavigate();
     const auth = useAuth();
-    const { api } = useApi();
+    const {api} = useApi();
     const [username, setUsername] = useState(auth.user?.username || '');
     const [email, setEmail] = useState(auth.user?.email || '');
     const [password, setPassword] = useState('');
@@ -30,13 +30,15 @@ const Register: React.FC = () => {
                 const successRegistrationResponse: { emailVerified: boolean } = res.data;
                 auth.refresh();
 
-                if (!successRegistrationResponse.emailVerified) {
-                    setSuccess('Registration successful! Please check your email to verify your account.');
-                    navigate('/login');
-                } else {
-                    setSuccess('Registration successful!');
-                    navigate('/')
-                }
+                setTimeout(() => {
+                    if (!successRegistrationResponse.emailVerified) {
+                        setSuccess('Registration successful! Please check your email to verify your account.');
+                        navigate('/login');
+                    } else {
+                        setSuccess('Registration successful!');
+                        navigate('/')
+                    }
+                }, 100);
             }
         } catch (e: any) {
             const errorCode: ErrorCode = e.response?.data?.errorCode;
@@ -70,6 +72,17 @@ const Register: React.FC = () => {
             <form onSubmit={handleSubmit}>
                 <div className={styles.formGroup}>
                     <input
+                        type="email"
+                        placeholder="Email"
+                        value={email}
+                        readOnly={auth.user?.email != null}
+                        onChange={e => setEmail(e.target.value)}
+                        required
+                        className={styles.input}
+                    />
+                </div>
+                <div className={styles.formGroup}>
+                    <input
                         type="text"
                         placeholder="Username"
                         value={username}
@@ -78,18 +91,6 @@ const Register: React.FC = () => {
                         className={styles.input}
                     />
                 </div>
-                {!auth.user?.email &&
-                    <div className={styles.formGroup}>
-                        <input
-                            type="email"
-                            placeholder="Email"
-                            value={email}
-                            onChange={e => setEmail(e.target.value)}
-                            required
-                            className={styles.input}
-                        />
-                    </div>
-                }
                 <div className={styles.formGroup}>
                     <input
                         type="password"
@@ -116,10 +117,24 @@ const Register: React.FC = () => {
             }
             {!auth.user &&
                 <a href={`${API_PUBLIC_URL}/auth/oauth2/authorization/google`} className={styles.googleButton}>
-                    <GoogleLogo />
+                    <GoogleLogo/>
                     Register with Google
                 </a>
             }
+            <div className={styles.loginPrompt}>
+                Already have an account?{' '}
+                <span
+                    className={styles.loginLink}
+                    role="button"
+                    tabIndex={0}
+                    onClick={() => navigate('/login')}
+                    onKeyDown={e => {
+                        if (e.key === 'Enter') navigate('/login');
+                    }}
+                >
+                Login here
+              </span>
+            </div>
         </div>
     );
 };

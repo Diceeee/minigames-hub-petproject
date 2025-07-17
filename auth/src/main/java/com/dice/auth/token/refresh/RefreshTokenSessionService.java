@@ -70,8 +70,14 @@ public class RefreshTokenSessionService {
         refreshTokenSessionRepository.deleteByTokenId(tokenId);
     }
 
+    public void deleteAllUserSessions(Long userId) {
+        log.info("Deleting all refresh tokens of user {}", userId);
+        refreshTokenSessionRepository.deleteAllByUserId(userId);
+    }
+
     public void clearExpiredRefreshTokens() {
         log.info("Clearing expired refresh tokens...");
         refreshTokenSessionRepository.deleteByExpiresAtBefore(clock.instant());
     }
+
 }

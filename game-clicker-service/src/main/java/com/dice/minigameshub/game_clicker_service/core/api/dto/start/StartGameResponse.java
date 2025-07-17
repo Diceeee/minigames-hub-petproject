@@ -9,7 +9,6 @@ import java.util.List;
 @Value
 @Builder
 public class StartGameResponse {
-    int basicCurrencyGainPerClick;
     long currency;
     long currencyIncomePerClick;
     long currencyIncomePerMinute;

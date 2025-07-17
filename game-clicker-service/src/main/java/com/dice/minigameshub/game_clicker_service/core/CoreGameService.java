@@ -47,9 +47,8 @@ public class CoreGameService {
             UserSaveDocument userSaveDocument = userSaveService.getUserSave(startGameInput.getUserDetails().getUserId());
 
             return StartGameResult.builder()
-                    .basicCurrencyGainPerClick(gameConfig.getBasicCurrencyGainPerClick())
                     .currency(userSaveDocument.getCurrency())
-                    .currencyIncomePerClick(userSaveDocument.getCurrencyIncomePerClick())
+                    .currencyIncomePerClick(userSaveDocument.getCurrencyIncomePerClick() + gameConfig.getBasicCurrencyGainPerClick())
                     .currencyIncomePerMinute(userSaveDocument.getCurrencyIncomePerMinute())
                     .userStatistics(coreGameMapper.mapDocument(userSaveDocument.getUserStatistics()))
                     .purchasedItemsIds(userSaveDocument.getPurchasedItemsIds())
@@ -65,9 +64,8 @@ public class CoreGameService {
 
         UserSaveDocument savedDocument = userSaveService.saveDocument(createdSaveDocument);
         return StartGameResult.builder()
-                .basicCurrencyGainPerClick(gameConfig.getBasicCurrencyGainPerClick())
                 .currency(savedDocument.getCurrency())
-                .currencyIncomePerClick(savedDocument.getCurrencyIncomePerClick())
+                .currencyIncomePerClick(savedDocument.getCurrencyIncomePerClick() + gameConfig.getBasicCurrencyGainPerClick())
                 .currencyIncomePerMinute(savedDocument.getCurrencyIncomePerMinute())
                 .userStatistics(coreGameMapper.mapDocument(savedDocument.getUserStatistics()))
                 .purchasedItemsIds(savedDocument.getPurchasedItemsIds())

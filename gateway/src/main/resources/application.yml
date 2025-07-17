@@ -14,21 +14,21 @@ spring:
               predicates:
                 - Path=/public/auth/**
               filters:
-                - StripPrefix=1
+                - StripPrefix=2
                 - PrefixPath=/api/public
             - id: game-clicker-service-public
               uri: 'lb://${gateway.services.game-clicker.service-name}'
               predicates:
                 - Path=/public/game-clicker/**
               filters:
-                - StripPrefix=1
+                - StripPrefix=2
                 - PrefixPath=/api/public
             - id: game-clicker-service-admin
               uri: 'lb://${gateway.services.game-clicker.service-name}'
               predicates:
                 - Path=/admin/game-clicker/**
               filters:
-                - StripPrefix=1
+                - StripPrefix=2
                 - PrefixPath=/api/admin
 
 eureka:

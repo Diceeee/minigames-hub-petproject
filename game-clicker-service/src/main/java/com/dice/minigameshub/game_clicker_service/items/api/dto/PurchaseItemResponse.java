@@ -6,6 +6,9 @@ import lombok.Value;
 @Value
 @Builder
 public class PurchaseItemResponse {
-    Integer newActiveIncomePerClick;
-    Integer newPassiveIncomePerMinute;
+    int currencyPayedForItemPurchase;
+    int currencyIncomePerClickBefore;
+    int currencyIncomePerClickAfter;
+    int currencyIncomePerMinuteBefore;
+    int currencyIncomePerMinuteAfter;
 }

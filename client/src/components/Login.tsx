@@ -81,6 +81,18 @@ const Login: React.FC = () => {
         <GoogleLogo />
         Login with Google
       </a>
+      <div className={styles.registerPrompt}>
+        Don't have an account yet?{' '}
+        <span
+          className={styles.registerLink}
+          role="button"
+          tabIndex={0}
+          onClick={() => navigate('/register')}
+          onKeyDown={e => { if (e.key === 'Enter') navigate('/register'); }}
+        >
+          Register here
+        </span>
+      </div>
     </div>
   );
 };

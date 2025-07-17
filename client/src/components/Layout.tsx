@@ -33,7 +33,7 @@ const Layout: React.FC = () => {
         </nav>
         {/* Right: Auth/Profile */}
         <div className={styles.auth}>
-          {user ? (
+          {user && user.registered ? (
             <>
               <span className={styles.welcome}>Hi, {user.username}</span>
               <button onClick={handleLogout} className={styles.logoutButton}>Logout</button>

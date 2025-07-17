@@ -28,8 +28,10 @@ public class RegistrationController {
     private final CookiesCreator cookiesCreator;
 
     @PostMapping("cancel")
-    public void cancel(Authentication authentication, HttpServletResponse response) {
-        if (authentication != null) {
+    public void cancel(@CookieValue(value = AuthConstants.Cookies.REFRESH_TOKEN, required = false) String refreshToken, HttpServletResponse response) throws JOSEException {
+        if (refreshToken != null) {
+            registrationService.cancelRegistration(refreshToken);
+
             Cookie accessTokenCookie = cookiesCreator.getDeletedAccessTokenCookie();
             Cookie refreshTokenCookie = cookiesCreator.getDeletedRefreshTokenCookie();
 
@@ -60,6 +62,8 @@ public class RegistrationController {
                         throw new ApiException("User with such username already exists", ApiError.REGISTRATION_FAILED_DUPLICATE_USERNAME);
                 case ALREADY_REGISTERED ->
                         throw new ApiException("User already registered", ApiError.REGISTRATION_FAILED_ALREADY_REGISTERED);
+                case OAUTH2_REGISTRATION_BROKEN ->
+                        throw new ApiException("User has to re-login via OAuth2 to continue registration", ApiError.REGISTRATION_FAILED_ALREADY_REGISTERED);
                 default ->
                         throw new ApiException("Unknown registration error: " + registrationResult.getError(), ApiError.UNKNOWN);
             }

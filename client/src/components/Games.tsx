@@ -2,14 +2,16 @@ import React, { useState } from 'react';
 import styles from '../styles/Games.module.css';
 import { neonBlue, neonPink, darkBg, darkPanel } from '../constants/colors';
 import { orbitron, fontSizeMedium, fontSizeLarge } from '../constants/fonts';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from './contexts/AuthContext';
 
 const games = [
   {
-    id: 'life-simulator',
-    name: 'Life Simulator',
+    id: 'game-clicker',
+    name: 'Clicker',
     description: (
       <>
-        <b>Life Simulator</b> is an addictive clicker game!<br />
+        <b>Clicker</b> is an addictive clicker game!<br />
         💸 Click to earn money actively.<br />
         🏢 Invest in businesses and assets to start making money passively.<br />
         🛒 Buy upgrades, manage your empire, and climb the wealth leaderboard!
@@ -32,6 +34,21 @@ const games = [
 
 const Games: React.FC = () => {
   const [selected, setSelected] = useState(games[0]);
+  const navigate = useNavigate();
+  const { user } = useAuth();
+
+  const handlePlay = () => {
+    if (selected.id === 'game-clicker') {
+      if (!user) {
+        navigate('/login');
+      } else {
+        navigate('/games/game-clicker');
+      }
+    } else {
+      // Placeholder for other games
+      alert('Coming soon!');
+    }
+  };
 
   return (
     <div className={styles.gameContainer}>
@@ -55,7 +72,7 @@ const Games: React.FC = () => {
       <div className={styles.gameDetails}>
         <h2 className={styles.gameDetailsHeader}>{selected.name}</h2>
         <div className={styles.gameDetailsDescription}>{selected.description}</div>
-        <button className={styles.playButton}>
+        <button className={styles.playButton} onClick={handlePlay}>
           Play
         </button>
       </div>

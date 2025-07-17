@@ -15,6 +15,7 @@ public class RegistrationResult {
 
     public enum Error {
         USERNAME_DUPLICATE,
-        ALREADY_REGISTERED
+        ALREADY_REGISTERED,
+        OAUTH2_REGISTRATION_BROKEN,
     }
 }

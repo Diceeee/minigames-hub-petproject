@@ -9,6 +9,7 @@ import Register from './Register';
 import Dashboard from './Dashboard';
 import Home from './Home';
 import Games from './Games';
+import ClickerGame from './pages/clicker-game/ClickerGame';
 
 const NotFound = () => <div>404 - Page Not Found</div>;
 
@@ -28,6 +29,7 @@ function App() {
                                 </ProtectedRoute>
                             }/>
                             <Route path="games" element={<Games/>}/>
+                            <Route path="games/game-clicker" element={<ClickerGame/>}/>
                             <Route path="*" element={<NotFound/>}/>
                         </Route>
                     </Routes>

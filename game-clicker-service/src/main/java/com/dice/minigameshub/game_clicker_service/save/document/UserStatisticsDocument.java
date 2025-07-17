@@ -9,5 +9,5 @@ public class UserStatisticsDocument {
 
     long totalClicks;
     long totalCurrencyEarned;
-    long totalCurrencyWasted;
+    long totalCurrencySpent;
 }

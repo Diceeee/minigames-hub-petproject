@@ -92,3 +92,23 @@
   transition: background 0.2s;
   cursor: pointer;
 }
+
+.loginPrompt {
+  margin-top: 1.5rem;
+  text-align: center;
+  color: #888;
+  font-size: 1rem;
+}
+
+.loginLink {
+  color: #6c63ff;
+  font-weight: bold;
+  cursor: pointer;
+  text-decoration: underline;
+  margin-left: 0.3em;
+  transition: color 0.2s;
+}
+.loginLink:hover, .loginLink:focus {
+  color: #554fd8;
+  outline: none;
+}
