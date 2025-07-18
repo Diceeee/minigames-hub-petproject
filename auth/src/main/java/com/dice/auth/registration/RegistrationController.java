@@ -2,8 +2,8 @@ package com.dice.auth.registration;
 
 import com.dice.auth.AuthConstants;
 import com.dice.auth.CookiesCreator;
-import com.dice.auth.core.exception.ApiError;
-import com.dice.auth.core.exception.ApiException;
+import com.dice.auth.common.exception.ServiceError;
+import com.dice.auth.common.exception.ServiceException;
 import com.nimbusds.jose.JOSEException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -13,7 +13,6 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -59,13 +58,13 @@ public class RegistrationController {
         } else {
             switch (registrationResult.getError()) {
                 case USERNAME_DUPLICATE ->
-                        throw new ApiException("User with such username already exists", ApiError.REGISTRATION_FAILED_DUPLICATE_USERNAME);
+                        throw new ServiceException("User with such username already exists", ServiceError.REGISTRATION_FAILED_DUPLICATE_USERNAME);
                 case ALREADY_REGISTERED ->
-                        throw new ApiException("User already registered", ApiError.REGISTRATION_FAILED_ALREADY_REGISTERED);
+                        throw new ServiceException("User already registered", ServiceError.REGISTRATION_FAILED_ALREADY_REGISTERED);
                 case OAUTH2_REGISTRATION_BROKEN ->
-                        throw new ApiException("User has to re-login via OAuth2 to continue registration", ApiError.REGISTRATION_FAILED_ALREADY_REGISTERED);
+                        throw new ServiceException("User has to re-login via OAuth2 to continue registration", ServiceError.REGISTRATION_FAILED_ALREADY_REGISTERED);
                 default ->
-                        throw new ApiException("Unknown registration error: " + registrationResult.getError(), ApiError.UNKNOWN);
+                        throw new ServiceException("Unknown registration error: " + registrationResult.getError(), ServiceError.UNKNOWN);
             }
         }
     }

@@ -1,11 +1,6 @@
-30.06.2025:
-1) Extract RSA key to some persistent storage or as file to not generate it for each app start.
-2) Finish email verification
-3) Finish registration
-    a) Remove continue endpoint and use tokens approach to pre-save data for OAuth2 login.
-4) Add validation on inputs
-5) Auto-clear 'zombie' users
-6) Auto-clear expired email verification tokens
-7) Improve errors handling
-8) Deduplication of users names
-9) Fix refresh token session not cleared in some cases (maybe cancel flow?)
+18.07.2025:
+1) Refactor/improve code quality.
+2) Extract pre-register logic from OAuth2LoginTokensGeneratingAuthenticationSuccessHandler to RegistrationService.
+3) Re-check and update security config routes to make them aligned with Gateway security
+4) Online users tracking, heartbeat endpoint (for future)
+5) Documentation/tests

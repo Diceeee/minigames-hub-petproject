@@ -24,6 +24,7 @@ public class User implements UserDetails {
     String email;
     String username;
     boolean emailVerified;
+    boolean registered;
     Instant createdAt;
     @Singular
     List<String> authorities;
@@ -36,14 +37,6 @@ public class User implements UserDetails {
         return authorities.stream()
                 .map(SimpleGrantedAuthority::new)
                 .toList();
-    }
-
-
-    public boolean isRegistered() {
-        return isEmailVerified()
-                && getEmail() != null
-                && getUsername() != null
-                && getPassword() != null;
     }
 
     public boolean inEmailVerificationProcess() {

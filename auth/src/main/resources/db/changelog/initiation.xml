@@ -22,6 +22,7 @@
                 <constraints nullable="false"/>
             </column>
             <column name="email_verified" type="BOOLEAN" defaultValueBoolean="false"/>
+            <column name="registered" type="BOOLEAN" defaultValueBoolean="false"/>
         </createTable>
 
         <createIndex schemaName="public" tableName="user" unique="true" indexName="user_username_index">

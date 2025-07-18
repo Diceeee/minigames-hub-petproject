@@ -1,8 +1,8 @@
 package com.dice.auth.user.api;
 
 import com.dice.auth.AuthConstants;
-import com.dice.auth.core.exception.ApiError;
-import com.dice.auth.core.exception.ApiException;
+import com.dice.auth.common.exception.ServiceError;
+import com.dice.auth.common.exception.ServiceException;
 import com.dice.auth.user.UserService;
 import com.dice.auth.user.dto.User;
 import com.dice.auth.user.exception.UserNotFoundException;
@@ -24,7 +24,7 @@ public class UserPublicApi {
         try {
             return ResponseEntity.ok(userService.getUserById(userId));
         } catch (UserNotFoundException e) {
-            throw new ApiException(String.format("User not found by id %d", userId), ApiError.USER_NOT_FOUND);
+            throw new ServiceException(String.format("User not found by id %d", userId), ServiceError.USER_NOT_FOUND);
         }
     }
 }

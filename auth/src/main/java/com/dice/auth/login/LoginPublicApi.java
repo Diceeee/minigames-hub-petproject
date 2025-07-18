@@ -2,8 +2,8 @@ package com.dice.auth.login;
 
 import com.dice.auth.AuthConstants;
 import com.dice.auth.CookiesCreator;
-import com.dice.auth.core.exception.ApiError;
-import com.dice.auth.core.exception.ApiException;
+import com.dice.auth.common.exception.ServiceError;
+import com.dice.auth.common.exception.ServiceException;
 import com.dice.auth.core.util.AuthUtils;
 import com.dice.auth.email.EmailPasswordAuthenticationToken;
 import com.dice.auth.token.TokensGenerator;
@@ -60,7 +60,7 @@ public class LoginPublicApi {
 
             Authentication authenticated = authenticationManager.authenticate(authenticationToken);
             if (!(authenticated.getPrincipal() instanceof User user)) {
-                throw new ApiException("Authentication principal is not a User object", ApiError.AUTHENTICATION_FAILED);
+                throw new ServiceException("Authentication principal is not a User object", ServiceError.AUTHENTICATION_FAILED);
             }
 
             Pair<String, String> accessAndRefreshTokens = tokensGenerator.generateTokensForUser(
@@ -83,13 +83,13 @@ public class LoginPublicApi {
 
         } catch (BadCredentialsException e) {
             log.warn("Failed login attempt for principal: {}", loginRequest.getPrincipal());
-            throw new ApiException("Invalid credentials", ApiError.INVALID_CREDENTIALS);
+            throw new ServiceException("Invalid credentials", ServiceError.INVALID_CREDENTIALS);
         } catch (AuthenticationException e) {
             log.error("Authentication error during login", e);
-            throw new ApiException("Authentication failed", ApiError.AUTHENTICATION_FAILED);
+            throw new ServiceException("Authentication failed", ServiceError.AUTHENTICATION_FAILED);
         } catch (JOSEException e) {
             log.error("Error generating tokens during login", e);
-            throw new ApiException("Token generation failed", ApiError.TOKEN_GENERATION_FAILED);
+            throw new ServiceException("Token generation failed", ServiceError.TOKEN_GENERATION_FAILED);
         }
     }
 

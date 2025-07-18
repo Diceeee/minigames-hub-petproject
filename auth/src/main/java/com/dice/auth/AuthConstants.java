@@ -15,6 +15,7 @@ public interface AuthConstants {
     interface Headers {
         String USER_AGENT = "User-Agent";
         String X_USER_ID = "X-User-Id";
+        String X_SESSION_ID = "X-Session-Id";
     }
 
     interface Uris {

@@ -25,7 +25,9 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.temporal.ChronoUnit;
+import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -66,19 +68,6 @@ public class TokensGenerator {
         Date refreshTokenExpiration = Date.from(clock.instant().plus(authProperties.getRefreshTokenExpirationInDays(), ChronoUnit.DAYS));
         RSAKey key = rsaKeyProvider.getRsaKey();
 
-        String accessToken = Jwts.builder()
-                .id(UUID.randomUUID().toString())
-                .issuer(authProperties.getIssuerName())
-                .issuedAt(jjwtClock.now())
-                .expiration(Date.from(clock.instant().plus(authProperties.getAccessTokenExpirationInMinutes(), ChronoUnit.MINUTES)))
-                .signWith(key.toPrivateKey())
-                .subject(user.getId().toString())
-                .claim(AuthConstants.Claims.AUTHORITIES, user.getAuthorities().stream()
-                        .map(GrantedAuthority::getAuthority)
-                        .collect(Collectors.joining(";")))
-                .claim(AuthConstants.Claims.SESSION_ID, refreshTokenSession.getId())
-                .compact();
-
         String refreshToken = Jwts.builder()
                 .id(refreshTokenId)
                 .issuer(authProperties.getIssuerName())
@@ -95,6 +84,7 @@ public class TokensGenerator {
                 .ipAddress(ipAddress)
                 .build());
 
+        String accessToken = generateAccessToken(key, user.getId(), refreshTokenSession.getId(), user.getAuthorities());
         return Pair.of(accessToken, refreshToken);
     }
 
@@ -126,19 +116,7 @@ public class TokensGenerator {
                 .browser(userAgentParseResult.browser())
                 .build());
 
-        String accessToken = Jwts.builder()
-                .id(UUID.randomUUID().toString())
-                .issuer(authProperties.getIssuerName())
-                .issuedAt(jjwtClock.now())
-                .expiration(Date.from(clock.instant().plus(authProperties.getAccessTokenExpirationInMinutes(), ChronoUnit.MINUTES)))
-                .signWith(key.toPrivateKey())
-                .subject(user.getId().toString())
-                .claim(AuthConstants.Claims.AUTHORITIES, user.getAuthorities().stream()
-                        .map(GrantedAuthority::getAuthority)
-                        .collect(Collectors.joining(";")))
-                .claim(AuthConstants.Claims.SESSION_ID, createdSession.getId())
-                .compact();
-
+        String accessToken = generateAccessToken(key, user.getId(), createdSession.getId(), user.getAuthorities());
         return Pair.of(accessToken, refreshToken);
     }
 
@@ -154,19 +132,7 @@ public class TokensGenerator {
 
         try {
             RSAKey key = rsaKeyProvider.getRsaKey();
-
-            return Jwts.builder()
-                    .id(UUID.randomUUID().toString())
-                    .issuer(authProperties.getIssuerName())
-                    .issuedAt(jjwtClock.now())
-                    .expiration(Date.from(clock.instant().plus(authProperties.getAccessTokenExpirationInMinutes(), ChronoUnit.MINUTES)))
-                    .signWith(key.toPrivateKey())
-                    .subject(user.getId().toString())
-                    .claim(AuthConstants.Claims.AUTHORITIES, user.getAuthorities().stream()
-                            .map(GrantedAuthority::getAuthority)
-                            .collect(Collectors.joining(";")))
-                    .claim(AuthConstants.Claims.SESSION_ID, refreshTokenSession.getId())
-                    .compact();
+            return generateAccessToken(key, user.getId(), refreshTokenSession.getId(), user.getAuthorities());
         } catch (Exception e) {
             log.error("Unexpected error while generating access token for user {}", user, e);
             throw new RuntimeException(e);
@@ -204,5 +170,20 @@ public class TokensGenerator {
             log.info(message);
             throw new GenericRefreshTokenException(message, RefreshTokenExceptionErrorCode.SESSION_REVOKED);
         }
+    }
+
+    private String generateAccessToken(RSAKey key, Long userId, String sessionId, Collection<? extends GrantedAuthority> authorities) throws JOSEException {
+        return Jwts.builder()
+                .id(UUID.randomUUID().toString())
+                .issuer(authProperties.getIssuerName())
+                .issuedAt(jjwtClock.now())
+                .expiration(Date.from(clock.instant().plus(authProperties.getAccessTokenExpirationInMinutes(), ChronoUnit.MINUTES)))
+                .signWith(key.toPrivateKey())
+                .subject(userId.toString())
+                .claim(AuthConstants.Claims.AUTHORITIES, authorities.stream()
+                        .map(GrantedAuthority::getAuthority)
+                        .collect(Collectors.joining(";")))
+                .claim(AuthConstants.Claims.SESSION_ID, sessionId)
+                .compact();
     }
 }

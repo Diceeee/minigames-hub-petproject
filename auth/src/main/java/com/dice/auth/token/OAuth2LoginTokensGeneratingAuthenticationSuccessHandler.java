@@ -78,6 +78,7 @@ public class OAuth2LoginTokensGeneratingAuthenticationSuccessHandler implements 
 
     /**
      * Pre-registers user that logged from external provider with his OIDC data.
+     * todo: move to registration service
      */
     private User preRegisterUser(OAuth2AuthenticationToken oAuth2AuthenticationToken) {
         DefaultOidcUser oidcUser = (DefaultOidcUser) oAuth2AuthenticationToken.getPrincipal();

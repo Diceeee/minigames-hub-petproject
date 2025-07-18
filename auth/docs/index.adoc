@@ -24,5 +24,9 @@ Users can register in application using common registration flow or registration
 
 In case of registration after first login using external provider, part of data will be pre-saved for user, while other data should still be set during registration. Also, email verification is skipped in this scenario cause external provider already tells if email is verified.
 
+==== Sessions
+Users can have multiple active sessions from multiple devices/browsers. One session is bind to one assigned to user refresh token.
+Auth service stores all such sessions and has ability to revoke sessions, making impossible getting new access tokens using such revoked sessions.
+
 === Per-responsibility documentations list
 ==== link:./login-flows.adoc[Login flows]

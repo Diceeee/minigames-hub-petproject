@@ -2,8 +2,8 @@ package com.dice.auth.token.refresh.api;
 
 import com.dice.auth.AuthConstants;
 import com.dice.auth.CookiesCreator;
-import com.dice.auth.core.exception.ApiError;
-import com.dice.auth.core.exception.ApiException;
+import com.dice.auth.common.exception.ServiceError;
+import com.dice.auth.common.exception.ServiceException;
 import com.dice.auth.core.util.AuthUtils;
 import com.dice.auth.token.TokensGenerator;
 import com.dice.auth.token.refresh.RefreshTokenSessionService;
@@ -43,12 +43,12 @@ public class RefreshTokenPublicApi {
             @RequestHeader(AuthConstants.Headers.USER_AGENT) String userAgent) throws IOException {
 
         if (refreshToken == null) {
-            throw new ApiException("Can't refresh without refresh token", ApiError.REFRESH_TOKEN_MISSING);
+            throw new ServiceException("Can't refresh without refresh token", ServiceError.REFRESH_TOKEN_MISSING);
         }
 
         try {
             if (!refreshValidator.validateRefreshAllowed(accessToken, refreshToken)) {
-                throw new ApiException("Refresh currently not allowed", ApiError.REFRESH_IS_TOO_FREQUENT);
+                throw new ServiceException("Refresh currently not allowed", ServiceError.REFRESH_IS_TOO_FREQUENT);
             }
 
             Pair<String, String> accessAndRefreshTokens = tokensGenerator.generateTokensForRefreshToken(refreshToken, userAgent, AuthUtils.getClientIpAddress(request));
@@ -61,7 +61,7 @@ public class RefreshTokenPublicApi {
 
             return ResponseEntity.ok(new RefreshTokensResponse(accessAndRefreshTokens.getLeft(), accessAndRefreshTokens.getRight()));
         } catch (JOSEException e) {
-            throw new ApiException("JOSE exception during refresh, message: " + e.getMessage(), ApiError.UNKNOWN);
+            throw new ServiceException("JOSE exception during refresh, message: " + e.getMessage(), ServiceError.UNKNOWN);
         }
     }
 

@@ -6,11 +6,10 @@
 . User enters: email, username, password.
 ** Validate email: must be unique and must be email.
 ** Validate username: must be unique.
-. User gets to verify email page.
-. User enters his email and verifies his email
-. User is registered and can log in.
+. User clicks 'register', then email message with verification code is sent to his email.
+. User goes by verification link from email that leads to registration confirmation and automatically logged in.
 
-==== External Provider Registration Flow
+==== OAuth2 (or External Provider) Registration Flow
 ===== Description
 . User first time logins using external provider a.e. Google
 . User redirected to registration page.
@@ -18,6 +17,6 @@
 ** Email
 . User enters: username, password.
 ** Validate username: must be unique.
-. User is registered and can log in.
+. User is registered and automatically logged in.
 
 ====== Note: In this flow, email verification is skipped cause user already has verified email by external provider.

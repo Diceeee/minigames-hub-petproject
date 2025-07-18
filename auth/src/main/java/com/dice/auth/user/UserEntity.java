@@ -57,6 +57,10 @@ public class UserEntity {
      */
     private boolean emailVerified;
     /**
+     * Indicates that user is fully registered.
+     */
+    private boolean registered;
+    /**
      * User's authorities
      */
     @ElementCollection

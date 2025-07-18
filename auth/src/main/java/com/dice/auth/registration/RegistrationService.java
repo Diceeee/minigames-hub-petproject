@@ -74,6 +74,7 @@ public class RegistrationService {
                     .username(registration.getUsername())
                     .password(passwordEncoder.encode(registration.getPassword()))
                     .authority(Roles.USER.getRoleWithPrefix())
+                    .registered(true)
                     .build());
             registration.setPassword(null);
 

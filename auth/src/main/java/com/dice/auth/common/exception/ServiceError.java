@@ -1,11 +1,11 @@
-package com.dice.auth.core.exception;
+package com.dice.auth.common.exception;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public enum ApiError {
+public enum ServiceError {
 
     UNKNOWN(-1),
 

@@ -14,6 +14,8 @@ public class AuthConfigurationProperties {
     Integer refreshTokenExpirationInDays;
     Integer accessTokenExpirationInMinutes;
     Integer verificationEmailRateLimitInMinutesPerUser;
+    Integer expireEmailVerificationsMinutes;
+    Integer expireNotRegisteredUsersMinutes;
 
     String rsaKeyId;
     String issuerName;
@@ -26,12 +28,15 @@ public class AuthConfigurationProperties {
 
     @ConstructorBinding
     public AuthConfigurationProperties(Integer refreshWindowInMinutes, Integer refreshTokenExpirationInDays, Integer accessTokenExpirationInMinutes,
-                                       Integer verificationEmailRateLimitInMinutesPerUser, String rsaKeyId, String issuerName,
+                                       Integer verificationEmailRateLimitInMinutesPerUser, Integer expireEmailVerificationsMinutes, Integer expireNotRegisteredUsersMinutes,
+                                       String rsaKeyId, String issuerName,
                                        Boolean trustProxyHeaders, Boolean preferExternalIp, String frontendUrl) {
         this.refreshWindowInMinutes = refreshWindowInMinutes == null ? 5 : refreshWindowInMinutes;
         this.refreshTokenExpirationInDays = refreshTokenExpirationInDays == null ? 60 : refreshTokenExpirationInDays;
         this.accessTokenExpirationInMinutes = accessTokenExpirationInMinutes == null ? 15 : accessTokenExpirationInMinutes;
         this.verificationEmailRateLimitInMinutesPerUser = verificationEmailRateLimitInMinutesPerUser == null ? 1 : verificationEmailRateLimitInMinutesPerUser;
+        this.expireEmailVerificationsMinutes = expireEmailVerificationsMinutes == null ? 60 : expireEmailVerificationsMinutes;
+        this.expireNotRegisteredUsersMinutes = expireNotRegisteredUsersMinutes == null ? 1440 : expireNotRegisteredUsersMinutes;
 
         this.rsaKeyId = rsaKeyId == null ? "authKeyId" : rsaKeyId;
         this.issuerName = issuerName == null ? "http://localhost:5000" : issuerName;
