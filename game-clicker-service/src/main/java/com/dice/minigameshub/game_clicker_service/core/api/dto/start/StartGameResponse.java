@@ -1,5 +1,6 @@
 package com.dice.minigameshub.game_clicker_service.core.api.dto.start;
 
+import com.dice.minigameshub.game_clicker_service.achievement.api.dto.AchievementStateResponse;
 import com.dice.minigameshub.game_clicker_service.core.dto.UserStatistics;
 import lombok.Builder;
 import lombok.Value;
@@ -17,4 +18,5 @@ public class StartGameResponse {
 
     UserStatistics userStatistics;
     List<String> purchasedItemsIds;
+    List<AchievementStateResponse> achievementStates;
 }

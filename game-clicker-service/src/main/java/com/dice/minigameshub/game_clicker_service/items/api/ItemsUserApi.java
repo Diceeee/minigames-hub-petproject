@@ -4,6 +4,7 @@ package com.dice.minigameshub.game_clicker_service.items.api;
 import com.dice.minigameshub.game_clicker_service.common.Headers;
 import com.dice.minigameshub.game_clicker_service.common.UserDetails;
 import com.dice.minigameshub.game_clicker_service.items.ItemsMapper;
+import com.dice.minigameshub.game_clicker_service.items.ItemsPurchaseService;
 import com.dice.minigameshub.game_clicker_service.items.ItemsService;
 import com.dice.minigameshub.game_clicker_service.items.api.dto.ItemResponse;
 import com.dice.minigameshub.game_clicker_service.items.api.dto.PurchaseItemResponse;
@@ -23,6 +24,7 @@ import java.util.List;
 @RequestMapping("/api/public/items")
 public class ItemsUserApi {
 
+    private final ItemsPurchaseService itemsPurchaseService;
     private final ItemsService itemsService;
     private final ItemsMapper itemsMapper;
 
@@ -33,7 +35,7 @@ public class ItemsUserApi {
 
         UserDetails userDetails = UserDetails.of(userId, sessionId);
 
-        PurchaseItemResult purchaseItemResult = itemsService.purchaseItem(PurchaseItemInput.builder()
+        PurchaseItemResult purchaseItemResult = itemsPurchaseService.purchaseItem(PurchaseItemInput.builder()
                 .userDetails(userDetails)
                 .itemId(itemId)
                 .build());

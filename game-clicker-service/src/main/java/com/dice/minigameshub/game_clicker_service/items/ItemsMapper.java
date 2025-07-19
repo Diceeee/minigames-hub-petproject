@@ -1,5 +1,6 @@
 package com.dice.minigameshub.game_clicker_service.items;
 
+import com.dice.minigameshub.game_clicker_service.achievement.AchievementMapper;
 import com.dice.minigameshub.game_clicker_service.items.api.dto.ItemResponse;
 import com.dice.minigameshub.game_clicker_service.items.api.dto.PurchaseItemResponse;
 import com.dice.minigameshub.game_clicker_service.items.dto.purchase.PurchaseItemResult;
@@ -8,7 +9,8 @@ import org.mapstruct.ReportingPolicy;
 
 @Mapper(componentModel = "spring",
         unmappedTargetPolicy = ReportingPolicy.ERROR,
-        unmappedSourcePolicy = ReportingPolicy.ERROR
+        unmappedSourcePolicy = ReportingPolicy.ERROR,
+        uses = AchievementMapper.class
 )
 public interface ItemsMapper {
 

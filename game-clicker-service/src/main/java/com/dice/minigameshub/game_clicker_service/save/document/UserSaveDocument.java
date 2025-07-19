@@ -6,7 +6,8 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Version;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
 @Builder(toBuilder = true)
@@ -22,6 +23,10 @@ public class UserSaveDocument {
     private int currencyIncomePerMinute;
     private int currencyIncomePerClick;
 
-    private List<String> purchasedItemsIds;
-    private UserStatisticsDocument userStatistics;
+    @Builder.Default
+    private Set<String> purchasedItemsIds = new HashSet<>();
+    @Builder.Default
+    private Set<String> completedAchievementsIds = new HashSet<>();
+    @Builder.Default
+    private UserStatisticsDocument userStatistics = UserStatisticsDocument.builder().build();
 }

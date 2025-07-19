@@ -1,5 +1,6 @@
 package com.dice.minigameshub.game_clicker_service.core;
 
+import com.dice.minigameshub.game_clicker_service.achievement.AchievementMapper;
 import com.dice.minigameshub.game_clicker_service.core.api.dto.UserStatisticsResponse;
 import com.dice.minigameshub.game_clicker_service.core.api.dto.clicks.ClicksResponse;
 import com.dice.minigameshub.game_clicker_service.core.api.dto.start.StartGameResponse;
@@ -12,7 +13,8 @@ import org.mapstruct.ReportingPolicy;
 
 @Mapper(componentModel = "spring",
         unmappedTargetPolicy = ReportingPolicy.ERROR,
-        unmappedSourcePolicy = ReportingPolicy.ERROR
+        unmappedSourcePolicy = ReportingPolicy.ERROR,
+        uses = AchievementMapper.class
 )
 public interface CoreGameMapper {
 
