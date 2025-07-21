@@ -11,5 +11,4 @@ public class ProgressResponse {
     long target;
     long delta;
     double ratio;
-    boolean completed;
 }

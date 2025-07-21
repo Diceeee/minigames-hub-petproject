@@ -1,6 +1,6 @@
 package com.dice.minigameshub.game_clicker_service.core.dto.start;
 
-import com.dice.minigameshub.game_clicker_service.achievement.dto.AchievementState;
+import com.dice.minigameshub.game_clicker_service.achievement.domain.AchievementState;
 import com.dice.minigameshub.game_clicker_service.core.dto.UserStatistics;
 import lombok.Builder;
 import lombok.Value;

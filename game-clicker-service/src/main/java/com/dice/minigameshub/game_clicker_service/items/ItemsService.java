@@ -1,26 +1,19 @@
 package com.dice.minigameshub.game_clicker_service.items;
 
-import com.dice.minigameshub.game_clicker_service.achievement.UserEventsAchievementsProcessor;
-import com.dice.minigameshub.game_clicker_service.achievement.dto.AchievementState;
 import com.dice.minigameshub.game_clicker_service.common.exception.Error;
 import com.dice.minigameshub.game_clicker_service.common.exception.ServiceException;
-import com.dice.minigameshub.game_clicker_service.items.dto.UpdateOrCreateItemInput;
-import com.dice.minigameshub.game_clicker_service.items.dto.purchase.PurchaseItemInput;
-import com.dice.minigameshub.game_clicker_service.items.dto.purchase.PurchaseItemResult;
-import com.dice.minigameshub.game_clicker_service.items.event.ItemPurchasedEvent;
-import com.dice.minigameshub.game_clicker_service.save.UserSaveService;
-import com.dice.minigameshub.game_clicker_service.save.document.UserSaveDocument;
+import com.dice.minigameshub.game_clicker_service.items.dto.CreateItemInput;
+import com.dice.minigameshub.game_clicker_service.items.dto.UpdateItemInput;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @AllArgsConstructor
 public class ItemsService {
 
-
-    private final UserSaveService userSaveService;
     private final ItemsRepository itemsRepository;
 
     public ItemDocument getItemById(String itemId) {
@@ -32,7 +25,7 @@ public class ItemsService {
         return itemsRepository.findAll();
     }
 
-    public ItemDocument updateOrCreateItem(UpdateOrCreateItemInput input) {
+    public ItemDocument updateOrCreateItem(UpdateItemInput input) {
         ItemDocument updatedOrCreatedItemDocument = ItemDocument.builder()
                 .id(input.getItemId())
                 .name(input.getName())
@@ -43,5 +36,18 @@ public class ItemsService {
                 .build();
 
         return itemsRepository.save(updatedOrCreatedItemDocument);
+    }
+
+    public ItemDocument createItem(CreateItemInput input) {
+        ItemDocument createdItem = ItemDocument.builder()
+                .id(UUID.randomUUID().toString())
+                .name(input.getName())
+                .description(input.getDescription())
+                .price(input.getPrice())
+                .currencyIncomeIncreaseInMinute(input.getCurrencyIncomeIncreaseInMinute())
+                .currencyIncomeIncreasePerClick(input.getCurrencyIncomeIncreasePerClick())
+                .build();
+
+        return itemsRepository.save(createdItem);
     }
 }

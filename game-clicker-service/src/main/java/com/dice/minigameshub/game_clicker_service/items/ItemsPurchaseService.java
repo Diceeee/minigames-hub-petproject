@@ -1,7 +1,7 @@
 package com.dice.minigameshub.game_clicker_service.items;
 
 import com.dice.minigameshub.game_clicker_service.achievement.UserEventsAchievementsProcessor;
-import com.dice.minigameshub.game_clicker_service.achievement.dto.AchievementState;
+import com.dice.minigameshub.game_clicker_service.achievement.domain.AchievementState;
 import com.dice.minigameshub.game_clicker_service.achievement.util.AchievementStatesUtil;
 import com.dice.minigameshub.game_clicker_service.common.exception.Error;
 import com.dice.minigameshub.game_clicker_service.common.exception.ServiceException;
@@ -53,6 +53,7 @@ public class ItemsPurchaseService {
         UserSaveDocument savedDocument = userSaveService.saveDocument(userSave);
 
         return PurchaseItemResult.builder()
+                .itemId(item.getId())
                 .achievementStates(achievementStates)
                 .currencyPayedForItemPurchase(item.getPrice())
                 .currencyIncomePerMinuteBefore(currencyIncomePerMinuteBefore)

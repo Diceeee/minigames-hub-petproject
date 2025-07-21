@@ -1,6 +1,6 @@
 package com.dice.minigameshub.game_clicker_service.achievement.util;
 
-import com.dice.minigameshub.game_clicker_service.achievement.dto.AchievementState;
+import com.dice.minigameshub.game_clicker_service.achievement.domain.AchievementState;
 import lombok.experimental.UtilityClass;
 
 import java.util.Collection;

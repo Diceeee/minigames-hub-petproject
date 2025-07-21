@@ -1,6 +1,6 @@
 package com.dice.minigameshub.game_clicker_service.items.dto.purchase;
 
-import com.dice.minigameshub.game_clicker_service.achievement.dto.AchievementState;
+import com.dice.minigameshub.game_clicker_service.achievement.domain.AchievementState;
 import lombok.Builder;
 import lombok.Value;
 
@@ -10,6 +10,7 @@ import java.util.List;
 @Builder
 public class PurchaseItemResult {
 
+    String itemId;
     int currencyPayedForItemPurchase;
     int currencyIncomePerClickBefore;
     int currencyIncomePerClickAfter;

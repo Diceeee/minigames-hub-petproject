@@ -1,6 +1,5 @@
 package com.dice.minigameshub.game_clicker_service.achievement;
 
-import com.dice.minigameshub.game_clicker_service.achievement.dto.AchievementState;
 import com.dice.minigameshub.game_clicker_service.achievement.target.AchievementTarget;
 import com.dice.minigameshub.game_clicker_service.achievement.target.ItemTarget;
 import com.dice.minigameshub.game_clicker_service.common.exception.Error;

@@ -1,11 +1,13 @@
-package com.dice.minigameshub.game_clicker_service.items.api.dto;
+package com.dice.minigameshub.game_clicker_service.items.dto;
 
 import lombok.Builder;
 import lombok.Value;
 
 @Value
 @Builder
-public class UpdateOrCreateItemRequest {
+public class UpdateItemInput {
+    String itemId;
+
     String name;
     String description;
 

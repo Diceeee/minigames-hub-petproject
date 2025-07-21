@@ -1,4 +1,4 @@
-package com.dice.minigameshub.game_clicker_service.achievement.dto;
+package com.dice.minigameshub.game_clicker_service.achievement.domain;
 
 import lombok.Builder;
 import lombok.Value;
@@ -10,8 +10,4 @@ public class AchievementState {
     String achievementId;
     boolean completed;
     Progress progress;
-
-    public boolean hasProgress() {
-        return progress != null;
-    }
 }

@@ -52,7 +52,7 @@ gateway:
       service-name: auth-service
     game-clicker:
       uri: http://localhost:5001
-      service-name: game-clicker
+      service-name: game-clicker-service
     frontend:
       uri: http://localhost:3000
 

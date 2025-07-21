@@ -1,7 +1,7 @@
 package com.dice.minigameshub.game_clicker_service.core;
 
 import com.dice.minigameshub.game_clicker_service.achievement.UserEventsAchievementsProcessor;
-import com.dice.minigameshub.game_clicker_service.achievement.dto.AchievementState;
+import com.dice.minigameshub.game_clicker_service.achievement.domain.AchievementState;
 import com.dice.minigameshub.game_clicker_service.achievement.util.AchievementStatesUtil;
 import com.dice.minigameshub.game_clicker_service.core.dto.clicks.ClicksProcessInput;
 import com.dice.minigameshub.game_clicker_service.core.dto.clicks.ClicksProcessResult;
@@ -20,7 +20,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -81,7 +80,6 @@ public class CoreGameService {
         UserSaveDocument createdSaveDocument = UserSaveDocument.builder()
                 .id(startGameInput.getUserDetails().getUserId())
                 .currencyIncomePerClick(gameConfig.getBasicCurrencyGainPerClick())
-                .purchasedItemsIds(Collections.emptySet())
                 .userStatistics(UserStatisticsDocument.builder().build())
                 .build();
 

@@ -5,9 +5,7 @@ import lombok.Value;
 
 @Value
 @Builder
-public class UpdateOrCreateItemInput {
-    String itemId;
-
+public class CreateItemInput {
     String name;
     String description;
 

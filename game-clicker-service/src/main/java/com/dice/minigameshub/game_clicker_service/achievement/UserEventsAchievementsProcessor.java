@@ -1,7 +1,7 @@
 package com.dice.minigameshub.game_clicker_service.achievement;
 
-import com.dice.minigameshub.game_clicker_service.achievement.dto.AchievementState;
-import com.dice.minigameshub.game_clicker_service.achievement.dto.Progress;
+import com.dice.minigameshub.game_clicker_service.achievement.domain.AchievementState;
+import com.dice.minigameshub.game_clicker_service.achievement.domain.Progress;
 import com.dice.minigameshub.game_clicker_service.achievement.target.CurrencyTarget;
 import com.dice.minigameshub.game_clicker_service.achievement.target.CurrencyTargetType;
 import com.dice.minigameshub.game_clicker_service.achievement.target.ItemTarget;

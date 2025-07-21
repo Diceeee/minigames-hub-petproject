@@ -9,6 +9,7 @@ import java.util.List;
 @Value
 @Builder
 public class PurchaseItemResponse {
+    String itemId;
     int currencyPayedForItemPurchase;
     int currencyIncomePerClickBefore;
     int currencyIncomePerClickAfter;
