@@ -91,4 +91,14 @@
   font-weight: bold;
   cursor: pointer;
   box-shadow: 0 0 12px var(--neon-pink, #ff00c8);
-} 
+  transition: background-color 0.2s ease, transform 0.3s ease;
+}
+
+.playButton:enabled:hover {
+  background: var(--neon-pink-secondary, #ff00c8);
+  transform: scale(1.1);
+}
+
+.playButton:disabled {
+  background: var(--dark-bg, #ff00c8);
+}

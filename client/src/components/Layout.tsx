@@ -35,7 +35,7 @@ const Layout: React.FC = () => {
         <div className={styles.auth}>
           {user && user.registered ? (
             <>
-              <span className={styles.welcome}>Hi, {user.username}</span>
+              <span className={styles.welcome}>Welcome, {user.username}!</span>
               <button onClick={handleLogout} className={styles.logoutButton}>Logout</button>
             </>
           ) : (

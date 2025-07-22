@@ -6,16 +6,19 @@ import ClickerPanel from './ClickerPanel';
 import Shop from './Shop';
 import StatsPanel from './StatsPanel';
 import AchievementsPanel from './AchievementsPanel';
-import type {
+import {
     AchievementResponse,
     AchievementState,
     ClicksProcessingResponse,
     ItemPurchaseResponse,
     ItemResponse,
     StartGameResponse,
+    TabsTypesEnum,
     UserStatisticsResponse,
 } from "../../../types/gameClickerTypes";
-import { useApi } from "../../contexts/ApiContext";
+import {useApi} from "../../contexts/ApiContext";
+import BankPanel from "./BankPanel";
+import RulesPanel from "./RulesPanel";
 
 // --- Utility Functions ---
 
@@ -105,7 +108,7 @@ interface GameState {
 
 const ClickerGame: React.FC = () => {
     // --- UI State ---
-    const [activeTab, setActiveTab] = useState<'shop' | 'stats' | 'achievements'>('shop');
+    const [activeTab, setActiveTab] = useState<TabsTypesEnum>(TabsTypesEnum.SHOP);
     const [sortAsc, setSortAsc] = useState(true);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -146,8 +149,6 @@ const ClickerGame: React.FC = () => {
                     items: itemsResponse,
                     playerClicksBuffer, // use the top-level ref
                 });
-                console.log(gameState);
-                console.log(startGameResponse);
                 setLocalDollars(startGameResponse.currency);
                 setLastServerDollars(startGameResponse.currency);
             })
@@ -167,7 +168,6 @@ const ClickerGame: React.FC = () => {
                 const clicksProcessingResponse = response.data as ClicksProcessingResponse;
                 const newStates = new Map(gameState?.achievementStates);
                 clicksProcessingResponse.achievementStates.forEach(state => newStates.set(state.achievementId, state));
-                console.log(gameState);
                 setGameState((prevState) => ({
                     ...prevState,
                     currency: clicksProcessingResponse.currencyAfterClicks,
@@ -260,26 +260,32 @@ const ClickerGame: React.FC = () => {
             <div className={styles.rightPanel}>
                 <div className={styles.tabs}>
                     <button
-                        className={`${styles.tabButton} ${activeTab === 'shop' ? styles.activeTab : ''}`}
-                        onClick={() => setActiveTab('shop')}
+                        className={`${styles.tabButton} ${activeTab === TabsTypesEnum.SHOP ? styles.activeTab : ''}`}
+                        onClick={() => setActiveTab(TabsTypesEnum.SHOP)}
                     >
                         Shop
                     </button>
                     <button
-                        className={`${styles.tabButton} ${activeTab === 'stats' ? styles.activeTab : ''}`}
-                        onClick={() => setActiveTab('stats')}
+                        className={`${styles.tabButton} ${activeTab === TabsTypesEnum.ACHIEVEMENTS ? styles.activeTab : ''}`}
+                        onClick={() => setActiveTab(TabsTypesEnum.ACHIEVEMENTS)}
+                    >
+                        Achievements
+                    </button>
+                    <button
+                        className={`${styles.tabButton} ${activeTab === TabsTypesEnum.STATS ? styles.activeTab : ''}`}
+                        onClick={() => setActiveTab(TabsTypesEnum.STATS)}
                     >
                         Statistics
                     </button>
                     <button
-                        className={`${styles.tabButton} ${activeTab === 'achievements' ? styles.activeTab : ''}`}
-                        onClick={() => setActiveTab('achievements')}
+                        className={`${styles.tabButton} ${activeTab === TabsTypesEnum.RULES ? styles.activeTab : ''}`}
+                        onClick={() => setActiveTab(TabsTypesEnum.RULES)}
                     >
-                        Achievements
+                        Rules
                     </button>
                 </div>
                 <div className={styles.tabContent}>
-                    {activeTab === 'shop' ? (
+                    {activeTab === TabsTypesEnum.SHOP ? (
                         <Shop
                             leftItems={leftItems}
                             rightItems={rightItems}
@@ -289,11 +295,11 @@ const ClickerGame: React.FC = () => {
                             sortAsc={sortAsc}
                             setSortAsc={setSortAsc}
                         />
-                    ) : activeTab === 'stats' ? (
+                    ) : activeTab === TabsTypesEnum.STATS ? (
                         <StatsPanel
                             userStatistics={gameState.userStatistics}
                         />
-                    ) : (
+                    ) : activeTab === TabsTypesEnum.ACHIEVEMENTS ? (
                         <AchievementsPanel
                             achievements={gameState.achievements || []}
                             achievementStates={gameState.achievementStates}
@@ -302,6 +308,8 @@ const ClickerGame: React.FC = () => {
                             isAchievementDone={ach => isAchievementDone(ach, gameState.achievementStates)}
                             getAchievementProgressRatio={ach => getAchievementProgressRatio(ach, gameState.achievementStates)}
                         />
+                    ) : (
+                        <RulesPanel />
                     )}
                 </div>
             </div>

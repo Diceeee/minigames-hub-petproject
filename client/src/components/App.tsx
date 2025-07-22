@@ -6,7 +6,7 @@ import {BrowserRouter, Routes, Route} from 'react-router-dom';
 import Layout from './Layout';
 import Login from './Login';
 import Register from './Register';
-import Dashboard from './Dashboard';
+import Dashboard from './pages/dashboard/Dashboard';
 import Home from './Home';
 import Games from './Games';
 import ClickerGame from './pages/clicker-game/ClickerGame';

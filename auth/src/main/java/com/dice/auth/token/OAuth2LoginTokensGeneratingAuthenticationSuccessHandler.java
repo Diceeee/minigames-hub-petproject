@@ -5,7 +5,7 @@ import com.dice.auth.CookiesCreator;
 import com.dice.auth.core.properties.AuthConfigurationProperties;
 import com.dice.auth.core.util.AuthUtils;
 import com.dice.auth.user.UserService;
-import com.dice.auth.user.dto.User;
+import com.dice.auth.user.domain.User;
 import com.dice.auth.user.exception.UserNotFoundException;
 import com.nimbusds.jose.JOSEException;
 import jakarta.servlet.http.Cookie;

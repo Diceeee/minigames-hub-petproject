@@ -3,7 +3,7 @@ package com.dice.auth.user.api;
 import com.dice.auth.common.exception.ServiceError;
 import com.dice.auth.common.exception.ServiceException;
 import com.dice.auth.user.UserService;
-import com.dice.auth.user.dto.User;
+import com.dice.auth.user.domain.User;
 import com.dice.auth.user.exception.UserNotFoundException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

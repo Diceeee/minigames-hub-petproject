@@ -70,10 +70,11 @@ public class RefreshTokenPublicApi {
         return ResponseEntity.ok(refreshTokenSessionService.getUserActiveSessions(userId));
     }
 
-    @PostMapping(path = "/sessions/revoke/{sessionId}")
+    @DeleteMapping(path = "/sessions/revoke/{sessionId}")
     public void revokeSession(@RequestHeader(AuthConstants.Headers.X_USER_ID) Long userId,
+                              @RequestHeader(AuthConstants.Headers.X_SESSION_ID) String sessionId,
                               @PathVariable(name = "sessionId") String revokedSessionId) {
 
-        refreshTokenSessionService.revokeSession(userId, revokedSessionId);
+        refreshTokenSessionService.revokeSession(userId, sessionId, revokedSessionId);
     }
 }

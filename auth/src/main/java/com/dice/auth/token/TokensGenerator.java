@@ -9,7 +9,7 @@ import com.dice.auth.token.refresh.dto.RefreshTokenSession;
 import com.dice.auth.token.refresh.exception.GenericRefreshTokenException;
 import com.dice.auth.token.refresh.exception.RefreshTokenExceptionErrorCode;
 import com.dice.auth.user.UserService;
-import com.dice.auth.user.dto.User;
+import com.dice.auth.user.domain.User;
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.jwk.RSAKey;
 import io.jsonwebtoken.Claims;
@@ -27,7 +27,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.temporal.ChronoUnit;
 import java.util.Collection;
 import java.util.Date;
-import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 

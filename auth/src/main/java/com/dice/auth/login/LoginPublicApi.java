@@ -8,7 +8,7 @@ import com.dice.auth.core.util.AuthUtils;
 import com.dice.auth.email.EmailPasswordAuthenticationToken;
 import com.dice.auth.token.TokensGenerator;
 import com.dice.auth.token.TokensLogoutHandler;
-import com.dice.auth.user.dto.User;
+import com.dice.auth.user.domain.User;
 import com.nimbusds.jose.JOSEException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;

@@ -1,6 +1,6 @@
 package com.dice.auth.registration;
 
-import com.dice.auth.user.dto.User;
+import com.dice.auth.user.domain.User;
 import lombok.Builder;
 import lombok.Value;
 

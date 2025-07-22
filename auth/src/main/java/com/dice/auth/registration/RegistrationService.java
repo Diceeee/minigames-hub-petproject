@@ -6,7 +6,7 @@ import com.dice.auth.token.TokensGenerator;
 import com.dice.auth.token.TokensParser;
 import com.dice.auth.token.refresh.RefreshTokenSessionService;
 import com.dice.auth.user.UserService;
-import com.dice.auth.user.dto.User;
+import com.dice.auth.user.domain.User;
 import com.dice.auth.user.exception.UserNotFoundException;
 import com.nimbusds.jose.JOSEException;
 import io.jsonwebtoken.Claims;

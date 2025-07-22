@@ -1,7 +1,7 @@
 package com.dice.auth.email;
 
 import com.dice.auth.user.UserService;
-import com.dice.auth.user.dto.User;
+import com.dice.auth.user.domain.User;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationProvider;

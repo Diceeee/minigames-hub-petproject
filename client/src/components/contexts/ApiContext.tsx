@@ -39,7 +39,7 @@ export const ApiProvider: React.FC<{ children: React.ReactNode }> = ({children})
                 await refreshPromiseRef.current;
                 return api(err.config);
             } catch (e: any) {
-                navigate('/login', {state: {errorMessage: 'You are logged out. Please, log in!'}});
+                navigate('/login');
             } finally {
                 refreshPromiseRef.current = null;
             }

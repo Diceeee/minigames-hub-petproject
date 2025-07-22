@@ -2,9 +2,8 @@ package com.dice.auth.email.verification;
 
 import com.dice.auth.core.access.Roles;
 import com.dice.auth.core.properties.AuthConfigurationProperties;
-import com.dice.auth.email.verification.exception.EmailWasNotSentException;
 import com.dice.auth.user.UserService;
-import com.dice.auth.user.dto.User;
+import com.dice.auth.user.domain.User;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.AllArgsConstructor;

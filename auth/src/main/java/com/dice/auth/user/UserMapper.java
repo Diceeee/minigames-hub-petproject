@@ -1,6 +1,6 @@
 package com.dice.auth.user;
 
-import com.dice.auth.user.dto.User;
+import com.dice.auth.user.domain.User;
 import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

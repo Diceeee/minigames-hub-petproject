@@ -1,4 +1,4 @@
-package com.dice.auth.user.dto;
+package com.dice.auth.user.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Builder;

@@ -1,3 +1,4 @@
+// === API types ===
 export interface ClicksProcessingResponse {
     currencyBeforeClicks: number,
     currencyAfterClicks: number,
@@ -82,4 +83,14 @@ export interface AchievementProgress {
     target: number,
     delta: number,
     ratio: number,
+}
+
+// === Logic types ===
+
+export enum TabsTypesEnum {
+    SHOP,
+    BANK,
+    STATS,
+    ACHIEVEMENTS,
+    RULES,
 }

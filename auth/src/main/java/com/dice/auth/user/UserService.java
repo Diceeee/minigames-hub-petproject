@@ -1,6 +1,6 @@
 package com.dice.auth.user;
 
-import com.dice.auth.user.dto.User;
+import com.dice.auth.user.domain.User;
 import com.dice.auth.user.exception.UserNotFoundException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

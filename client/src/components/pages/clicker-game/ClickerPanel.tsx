@@ -18,8 +18,9 @@ const ClickerPanel: React.FC<ClickerPanelProps> = ({ dollars, dollarsPerClick, d
       <div className={styles.currencyValue}>{dollars} $</div>
       <div className={styles.currencyLabel}>Dollars per Click:</div>
       <div className={styles.currencyValue}>{dollarsPerClick} $</div>
-      <div className={styles.currencyLabel}>Dollars per Minute:</div>
-      <div className={styles.currencyValue}>{dollarsPerMinute} $</div>
+      {/* TODO: uncomment when passive income feature will be implemented  */}
+      {/*<div className={styles.currencyLabel}>Dollars per Minute:</div>*/}
+      {/*<div className={styles.currencyValue}>{dollarsPerMinute} $</div>*/}
     </div>
   </div>
 );

@@ -32,6 +32,8 @@ export interface RegisterRequest {
 }
 
 export interface User {
+    id: number,
+    sessionId: string,
     username: string,
     email: string,
     emailVerified: boolean,
