@@ -7,7 +7,7 @@
 ** Validate email: must be unique and must be email.
 ** Validate username: must be unique.
 . User clicks 'register', then email message with verification code is sent to his email.
-. User goes by verification link from email that leads to registration confirmation and automatically logged in.
+. User goes by verification link from email that leads to registration confirmation and auto-log-in.
 
 ==== OAuth2 (or External Provider) Registration Flow
 ===== Description
@@ -17,6 +17,4 @@
 ** Email
 . User enters: username, password.
 ** Validate username: must be unique.
-. User is registered and automatically logged in.
-
-====== Note: In this flow, email verification is skipped cause user already has verified email by external provider.
+. User is registered and automatically logged in *without email verification flow*.

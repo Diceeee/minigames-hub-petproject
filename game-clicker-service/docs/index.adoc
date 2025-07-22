@@ -1,0 +1,42 @@
+== Game Clicker Service documentation
+
+=== Description
+Game Clicker Service responsible for one single game in system - Clicker. It contains the whole Clicker game logic. It uses MongoDB as storage but can be migrated with minimal actions to any other database.
+
+==== Disclaimer
+MongoDB is not the best database that could be used for use cases that this service. Clicker has frequent writes even with client-side optimization to send clicks per user only once in 500-1000ms. MongoDB was chosen by selfish reasons cause I wanted to try this database and get knowledge of it. It requires additional optimizations for such frequent writes scenario like Redis-cache layer to buffer user game save state and write only once in some time window. Or database that handles frequent writes better could be used instead, like Aerospike or maybe Cassandra, that have better performance and latency for frequent write operations. MongoDB was chosen for practice and learning.
+
+=== Responsibilities
+==== Clicker game logic
+Only one responsibility of service - is to handle game logic of clicker game.
+
+=== Core game actions
+==== Start Game
+Starts game for user, returns his persisted state, such as currency, achievements progress and other. Also binds user save to last session id that started game, so game can be played only from one active game session at once. If user tries to perform action in game with session id that differs from last start game, action will be rejected.
+
+==== Process clicks
+Processes batched clicks that were done by user. Updates statistics. Calculates earnings. Updates achievement states. Have basic cheat prevention system that basically limits clicks that can be done by user in short period of time.
+
+==== Purchase item
+Purchases item that increase user's income (passive and active).
+
+=== Additional APIs
+
+==== Get all achievements
+Gets all achievements that exist in game.
+
+==== Get all items
+Gets all items that exist in game and can be purchased by users.
+
+=== Configuration for local run
+
+To run locally, you must configure application-secrets.yml to connect to MongoDB, example:
+
+```yaml
+spring:
+  data:
+    mongodb:
+      password: <password>
+      username: <username>
+      database: <database>
+```

@@ -2,22 +2,21 @@
 
 Auth service is infrastructure service built on Spring Security.
 
-Authentication is stateless and made via JWT tokens and using access tokens, refresh tokens approach that are stored in secure cookies.
+Authentication is stateless and made via JWT tokens and using access tokens, refresh tokens approach that are stored in secure cookies for now, so authentication is designed to work with browsers only for now, but can be updated with a little effort to support mobile/other clients.
 
-Access tokens are short-living tokens, they are used to every request in application, they are signed and can be validated. Access tokens are automatically refreshed in 'refresh window' period, meaning that if they are going to expire soon, they are automatically prolonged.
+Access tokens are short-living tokens, they are used to every request in application, they are signed and can be validated.
+*Access tokens are refreshed by clients on demand*, a.e. when client gets 401/403 errors, refresh attempt may lead to new access token without need to proceed with login flow. *Access tokens are sent to all endpoints in system.*
 
-Refresh tokens are long-living tokens, they are sent only to refresh endpoint and used to refresh user's access tokens.
+Refresh tokens are long-living tokens, they are used to get new access tokens without need for re-login. *Refresh tokens sent only to Auth service*, so they are more secure than access tokens.
 
-Refresh token also uses 'sliding expiration' approach: when refresh is performed, user also refreshes the refresh token, so technically, it could leave without expiration at all that lead to positive user experience (you will not log out suddenly in the middle of process).
-
-Auto-refresh is performed only during users GET requests, that guarantees 'invisible' refresh in background without impacting user's experience.
+Refresh token also uses *'sliding expiration'* approach: when refresh is performed, user also refreshes the refresh token, so technically, it could leave without expiration at all that lead to positive user experience (you will not log out suddenly in the middle of process).
 
 === Responsibilities
 ==== Login
-Users can log in to application using external providers as Google, Facebook, or using usual username/email login flow.
+Users can log in to application using external providers as Google, Facebook (not added fully but can be extended on demand), or using usual username/email + password login flow. If user is not registered after logging in via OAuth2, it will proceed with registration flow.
 
 ==== Logout
-Users can log out from application. It is equal to remove of access/refresh tokens from cookies.
+Users can log out from application. It is equal to remove of access/refresh tokens from cookies. Refresh token session is also deleted from database, meaning full session end.
 
 ==== Registration
 Users can register in application using common registration flow or registration as result of first login using external provider as Google/Facebook/other.
@@ -29,4 +28,22 @@ Users can have multiple active sessions from multiple devices/browsers. One sess
 Auth service stores all such sessions and has ability to revoke sessions, making impossible getting new access tokens using such revoked sessions.
 
 === Per-responsibility documentations list
-==== link:./login-flows.adoc[Login flows]
+==== link:./registration-flows.adoc[Registration flows]
+
+=== Configuration for local run
+
+To run locally, you must configure application-secrets.yml to connect to Mail smtp serivice, your Gmail registered client and PostgreSQL database, example:
+
+```yaml
+spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-secret: <client-secret>
+  datasource:
+    password: <password_of_db_user>
+  mail:
+    password: <4-word phrase for gmail account, a.e. - 'milk wood ace fish'>
+```
