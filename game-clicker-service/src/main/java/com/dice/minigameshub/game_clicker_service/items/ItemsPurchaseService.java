@@ -5,11 +5,13 @@ import com.dice.minigameshub.game_clicker_service.achievement.domain.Achievement
 import com.dice.minigameshub.game_clicker_service.achievement.util.AchievementStatesUtil;
 import com.dice.minigameshub.game_clicker_service.common.exception.Error;
 import com.dice.minigameshub.game_clicker_service.common.exception.ServiceException;
+import com.dice.minigameshub.game_clicker_service.core.CoreGameMapper;
 import com.dice.minigameshub.game_clicker_service.items.dto.purchase.PurchaseItemInput;
 import com.dice.minigameshub.game_clicker_service.items.dto.purchase.PurchaseItemResult;
 import com.dice.minigameshub.game_clicker_service.items.event.ItemPurchasedEvent;
 import com.dice.minigameshub.game_clicker_service.save.UserSaveService;
 import com.dice.minigameshub.game_clicker_service.save.document.UserSaveDocument;
+import com.dice.minigameshub.game_clicker_service.save.document.UserStatisticsDocument;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +24,7 @@ public class ItemsPurchaseService {
     private final UserEventsAchievementsProcessor userEventsAchievementsProcessor;
     private final UserSaveService userSaveService;
     private final ItemsService itemsService;
+    private final CoreGameMapper coreGameMapper;
 
     public PurchaseItemResult purchaseItem(PurchaseItemInput input) {
         UserSaveDocument userSave = userSaveService.getUserSave(input.getUserDetails().getUserId());
@@ -37,6 +40,7 @@ public class ItemsPurchaseService {
         }
 
         userSave.setCurrency(userSave.getCurrency() - item.getPrice());
+        userSave.getPurchasedItemsIds().add(item.getId());
 
         int currencyIncomePerClickBefore = userSave.getCurrencyIncomePerClick();
         int currencyIncomePerMinuteBefore = userSave.getCurrencyIncomePerMinute();
@@ -50,6 +54,12 @@ public class ItemsPurchaseService {
 
         List<AchievementState> achievementStates = userEventsAchievementsProcessor.processItemPurchasedEvent(itemPurchasedEvent);
         userSave.getCompletedAchievementsIds().addAll(AchievementStatesUtil.getCompletedAchievementIds(achievementStates));
+
+        UserStatisticsDocument userStatistics = userSave.getUserStatistics();
+        userSave.setUserStatistics(userStatistics.toBuilder()
+                .totalCurrencySpent(userStatistics.getTotalCurrencySpent() + item.getPrice())
+                .build());
+
         UserSaveDocument savedDocument = userSaveService.saveDocument(userSave);
 
         return PurchaseItemResult.builder()
@@ -60,6 +70,7 @@ public class ItemsPurchaseService {
                 .currencyIncomePerClickBefore(currencyIncomePerClickBefore)
                 .currencyIncomePerClickAfter(savedDocument.getCurrencyIncomePerClick())
                 .currencyIncomePerMinuteAfter(savedDocument.getCurrencyIncomePerMinute())
+                .userStatistics(coreGameMapper.mapDocument(savedDocument.getUserStatistics()))
                 .build();
     }
 }

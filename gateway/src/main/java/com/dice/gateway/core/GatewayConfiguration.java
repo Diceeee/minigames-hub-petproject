@@ -83,10 +83,8 @@ public class GatewayConfiguration {
                         }
                 )
                 .authorizeExchange(authorize -> authorize
-                        .pathMatchers("/public/auth/refresh")
-                        .authenticated()
                         .pathMatchers("/public/auth/login/**", "/csrf", "/public/auth/register/**", "/css/**", "/js/**", "/images/**", "/favicon.ico",
-                                "/public/auth/oauth2/authorization/**", "/public/auth/email/verification/**", "/public/auth/user/me")
+                                "/public/auth/oauth2/authorization/**", "/public/auth/email/verification/**", "/public/auth/user/me", "/public/auth/refresh")
                         .permitAll()
                         .pathMatchers("/public/**")
                         .hasAnyRole(Roles.USER.getRoleWithoutPrefix(), Roles.ADMIN.getRoleWithoutPrefix())

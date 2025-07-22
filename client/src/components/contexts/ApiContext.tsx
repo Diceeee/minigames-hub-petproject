@@ -2,6 +2,7 @@ import React, {createContext, RefObject, useCallback, useContext, useEffect, use
 import axios, {AxiosInstance, InternalAxiosRequestConfig} from "axios";
 import {API_BASE_URL} from "../../api/urls";
 import Cookies from "js-cookie";
+import {useNavigate} from "react-router-dom";
 
 type ApiContextType = {
     api: AxiosInstance,
@@ -13,8 +14,9 @@ const ApiContext = createContext<ApiContextType | undefined>(undefined);
 export const ApiProvider: React.FC<{ children: React.ReactNode }> = ({children}) => {
     const csrfToken = Cookies.get('XSRF-TOKEN');
     const tryRefreshOnAccessDenied = useRef(true);
+    const refreshPromiseRef = useRef<Promise<any> | null>(null);
+    const navigate = useNavigate();
 
-    // Use refs to always have the latest callback logic
     const xsrfCallback = useCallback((config: InternalAxiosRequestConfig) => {
         if (csrfToken) {
             config.headers['X-XSRF-TOKEN'] = csrfToken;
@@ -27,23 +29,24 @@ export const ApiProvider: React.FC<{ children: React.ReactNode }> = ({children})
     }, [xsrfCallback]);
 
     // Response interceptor refresh logic as ref
-    const refreshInterceptor = useRef<null | ((error: any) => Promise<any>)>(null);
-    refreshInterceptor.current = async (error: any) => {
-        if (error.response &&
-            (error.response.status === 401 || error.response.status === 403) &&
-            tryRefreshOnAccessDenied.current
-        ) {
+    const refInterceptor = useCallback(async (err: any) => {
+        if (err.response && (err.response.status === 401 || err.response.status === 403 && tryRefreshOnAccessDenied.current)) {
+            if (!refreshPromiseRef.current) {
+                refreshPromiseRef.current = api.post('/public/auth/refresh');
+            }
+
             try {
-                tryRefreshOnAccessDenied.current = false;
-                await api.post('/public/auth/refresh', null);
-                tryRefreshOnAccessDenied.current = true;
-                return api(error.config);
-            } catch (e) {
-                // Optionally handle refresh failure
+                await refreshPromiseRef.current;
+                return api(err.config);
+            } catch (e: any) {
+                navigate('/login', {state: {errorMessage: 'You are logged out. Please, log in!'}});
+            } finally {
+                refreshPromiseRef.current = null;
             }
         }
-        return Promise.reject(error);
-    };
+
+        return Promise.reject(err);
+    }, []);
 
     // Create Axios instance and add interceptors only once
     const api = useMemo(() => {
@@ -51,18 +54,16 @@ export const ApiProvider: React.FC<{ children: React.ReactNode }> = ({children})
             baseURL: API_BASE_URL,
             withCredentials: true,
         });
-        // Request interceptor uses xsrfRef
         instance.interceptors.request.use(
             (config) => xsrfRef.current(config),
             (error) => Promise.reject(error)
         );
-        // Response interceptor uses refreshInterceptor
         instance.interceptors.response.use(
             response => response,
-            (error) => refreshInterceptor.current ? refreshInterceptor.current(error) : Promise.reject(error)
+            (error) => refInterceptor ? refInterceptor(error) : Promise.reject(error)
         );
         return instance;
-    }, []);
+    }, [refInterceptor]);
 
     return (
         <ApiContext.Provider value={{api, tryRefreshOnAccessDenied}}>

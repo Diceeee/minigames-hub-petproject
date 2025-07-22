@@ -18,7 +18,6 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
 import java.util.List;
 
 @Slf4j
@@ -33,10 +32,9 @@ public class CoreGameService {
 
     public ClicksProcessResult processClicks(ClicksProcessInput clicksInput) {
         UserSaveDocument userSaveDocument = userSaveService.getUserSave(clicksInput.getUserDetails().getUserId());
-        GameConfig gameConfig = gameConfigService.getGameConfig();
 
         long currencyBefore = userSaveDocument.getCurrency();
-        long currencyEarned = (long) gameConfig.getBasicCurrencyGainPerClick() * clicksInput.getClicks();
+        long currencyEarned = (long) userSaveDocument.getCurrencyIncomePerClick() * clicksInput.getClicks();
 
         userSaveDocument.setCurrency(currencyBefore + currencyEarned);
         UserClicksProcessedEvent userClicksProcessedEvent = UserClicksProcessedEvent.builder()
@@ -48,10 +46,17 @@ public class CoreGameService {
         List<AchievementState> achievementStates = userEventsAchievementsProcessor.processClicksProcessedEvent(userClicksProcessedEvent);
         userSaveDocument.getCompletedAchievementsIds().addAll(AchievementStatesUtil.getCompletedAchievementIds(achievementStates));
 
+        UserStatisticsDocument userStatistics = userSaveDocument.getUserStatistics();
+        userSaveDocument.setUserStatistics(userStatistics.toBuilder()
+                .totalClicks(userStatistics.getTotalClicks() + clicksInput.getClicks())
+                .totalCurrencyEarned(userStatistics.getTotalCurrencyEarned() + currencyEarned)
+                .build());
+
         userSaveService.saveDocument(userSaveDocument);
         return ClicksProcessResult.builder()
                 .currencyBeforeClicks(currencyBefore)
                 .currencyAfterClicks(userSaveDocument.getCurrency())
+                .userStatistics(coreGameMapper.mapDocument(userSaveDocument.getUserStatistics()))
                 .achievementStates(achievementStates)
                 .build();
     }

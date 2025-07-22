@@ -1,6 +1,7 @@
 export interface ClicksProcessingResponse {
     currencyBeforeClicks: number,
     currencyAfterClicks: number,
+    userStatistics: UserStatisticsResponse,
     achievementStates: AchievementState[],
 }
 
@@ -21,6 +22,7 @@ export interface ItemPurchaseResponse {
     currencyIncomePerMinuteBefore: number,
     currencyIncomePerMinuteAfter: number,
     achievementStates: AchievementState[],
+    userStatistics: UserStatisticsResponse,
 }
 
 export interface ItemResponse {

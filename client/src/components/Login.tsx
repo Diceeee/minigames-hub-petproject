@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import { useAuth } from './contexts/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import {useLocation, useNavigate} from 'react-router-dom';
 import styles from '../styles/Login.module.css';
 import {ErrorCode} from "../api/types";
 import {GoogleLogo} from "../constants/svg-logos";
@@ -11,10 +11,18 @@ const Login: React.FC = () => {
   const { refresh } = useAuth();
   const { api } = useApi();
   const navigate = useNavigate();
+  const location = useLocation();
   const [principal, setPrincipal] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+
+  const locationState = location.state as null | {errorMessage: string};
+  useEffect(() => {
+    if (locationState != null) {
+      setError(locationState.errorMessage);
+    }
+  }, [location]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
