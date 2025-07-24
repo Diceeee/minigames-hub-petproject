@@ -1,5 +1,6 @@
 package com.dice.auth.user;
 
+import com.dice.auth.user.api.dto.UserResponse;
 import com.dice.auth.user.domain.User;
 import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
@@ -22,6 +23,9 @@ public interface UserMapper {
 
     @BeanMapping(ignoreUnmappedSourceProperties = {"accountNonExpired", "accountNonLocked", "credentialsNonExpired", "enabled", "registered"})
     UserEntity mapUserToEntity(User user);
+
+    @BeanMapping(ignoreUnmappedSourceProperties = {"accountNonExpired", "accountNonLocked", "credentialsNonExpired", "enabled", "registered"})
+    UserResponse mapToResponse(User user);
 
     default Collection<? extends GrantedAuthority> mapAuthoritiesFromListOfStrings(List<String> authorities) {
         return authorities.stream()

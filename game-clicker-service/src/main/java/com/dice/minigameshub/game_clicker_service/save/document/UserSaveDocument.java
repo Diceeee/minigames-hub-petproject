@@ -1,32 +1,52 @@
 package com.dice.minigameshub.game_clicker_service.save.document;
 
 import lombok.Builder;
-import lombok.Data;
+import lombok.Value;
+import lombok.With;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Version;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.util.HashSet;
+import java.util.Collections;
+import java.util.Objects;
 import java.util.Set;
 
-@Data
+@Value
+@With
 @Builder(toBuilder = true)
 @Document(collection = "user_game_save")
 public class UserSaveDocument {
 
     @Id
-    private long id;
+    Long id;
     @Version
-    private long version;
+    Long version;
 
-    private long currency;
-    private int currencyIncomePerMinute;
-    private int currencyIncomePerClick;
+    String lastSessionId;
+    Long currency;
+    Integer currencyIncomePerMinute;
+    Integer currencyIncomePerClick;
 
-    @Builder.Default
-    private Set<String> purchasedItemsIds = new HashSet<>();
-    @Builder.Default
-    private Set<String> completedAchievementsIds = new HashSet<>();
-    @Builder.Default
-    private UserStatisticsDocument userStatistics = UserStatisticsDocument.builder().build();
+    Set<String> purchasedItemsIds;
+    Set<String> completedAchievementsIds;
+
+    UserStatisticsDocument userStatistics;
+
+    public UserSaveDocument(Long id, Long version, String lastSessionId, Long currency, Integer currencyIncomePerMinute,
+                            Integer currencyIncomePerClick, Set<String> purchasedItemsIds, Set<String> completedAchievementsIds,
+                            UserStatisticsDocument userStatistics) {
+
+        this.id = id;
+        this.version = version;
+        this.lastSessionId = lastSessionId;
+
+        this.currency = Objects.requireNonNullElse(currency, 0L);
+        this.currencyIncomePerMinute = Objects.requireNonNullElse(currencyIncomePerMinute, 0);
+        this.currencyIncomePerClick = Objects.requireNonNullElse(currencyIncomePerClick, 0);
+
+        this.purchasedItemsIds = Set.copyOf(Objects.requireNonNullElseGet(purchasedItemsIds, Collections::emptySet));
+        this.completedAchievementsIds = Set.copyOf(Objects.requireNonNullElseGet(completedAchievementsIds, Collections::emptySet));
+
+        this.userStatistics = Objects.requireNonNullElseGet(userStatistics, UserStatisticsDocument::createNew);
+    }
 }

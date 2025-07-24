@@ -11,12 +11,6 @@ public enum Error {
 
     // --- GENERAL ---
     NOT_ENOUGH_CURRENCY(1),
-
-    /**
-     * User tries to perform action from session that differs from last session that was used to start game.
-     * Only one active session is allowed per game.
-     * If start game performed from other session, previous session will become inactive.
-     */
     ACTIVE_SESSION_MISMATCH(2),
 
     // --- ITEMS ---
@@ -30,7 +24,10 @@ public enum Error {
     GAME_NOT_CONFIGURED(300),
 
     // --- ACHIEVEMENTS ---
-    ACHIEVEMENT_NOT_FOUND(400);
+    ACHIEVEMENT_NOT_FOUND(400),
+
+    // --- CHEATING PREVENTION ---
+    CLICKS_LIMIT_PER_MINUTE_EXCEED(500);
 
     private final int errorCode;
 }
