@@ -111,3 +111,41 @@ _Valid for 23.07.2025_
 **Responsibilities:**
 1. Game logic
 2. User game data persistence
+
+## How to start up project
+
+### Dev-only limitations
+There is limitation for now that not all configuration can be avoided with dev-only values, a.e. SMTP connection (email) and OAuth2 client registration for Google.
+
+These limitations, unfortunately, do not make possible to use some parts of functionality such as registration/email verification/OAuth2 flow.
+
+For dev-only, test user will be created to avoid registration flow. You can log in as test user without need to register.
+
+### Start project
+
+1. Make sure you have Docker installed (a.e. Docker Desktop for Windows) and enabled.
+2. In root project dir, run:
+
+```shell
+docker-compose up --build
+```
+
+### What can be touched
+_Valid for 28.07.2025_
+
+1. Login/logout
+2. Clicker game fully playable.
+3. Sessions revoking in dashboard.
+
+### How to login
+
+Use test user's credentials:
+
+```json
+{
+   "email": "test@test.com",
+   "username": "test",
+   "password": "test"
+}
+```
+

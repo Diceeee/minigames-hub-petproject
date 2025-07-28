@@ -8,6 +8,7 @@ import com.dice.minigameshub.game_clicker_service.core.dto.UserStatistics;
 import com.dice.minigameshub.game_clicker_service.core.dto.clicks.ClicksProcessResult;
 import com.dice.minigameshub.game_clicker_service.core.dto.start.StartGameResult;
 import com.dice.minigameshub.game_clicker_service.save.document.UserStatisticsDocument;
+import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;
 
@@ -18,6 +19,7 @@ import org.mapstruct.ReportingPolicy;
 )
 public interface CoreGameMapper {
 
+    @BeanMapping(ignoreUnmappedSourceProperties = "clickEvents")
     UserStatistics mapDocument(UserStatisticsDocument document);
 
     UserStatisticsResponse mapToResponse(UserStatistics userStatistics);

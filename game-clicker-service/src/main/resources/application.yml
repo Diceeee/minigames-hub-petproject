@@ -4,7 +4,7 @@ server:
 eureka:
   client:
     service-url:
-      defaultZone: http://localhost:8761/eureka/
+      defaultZone: http://${SERVICE_REGISTRY_HOST:localhost}:${SERVICE_REGISTRY_PORT:8761}/eureka/
     register-with-eureka: true
     fetch-registry: true
     registry-fetch-interval-seconds: 30
@@ -20,3 +20,12 @@ management:
   endpoint:
     health:
       show-details: ALWAYS
+
+spring:
+  data:
+    mongodb:
+      host: ${MONGO_HOST:localhost}
+      port: ${MONGO_PORT:27017}
+      username: ${MONGO_USER:game-clicker-service}
+      database: ${MONGO_DB:game-clicker-db}
+      password: ${MONGO_PASSWORD}

@@ -51,7 +51,7 @@ public class GatewayConfiguration {
                 .withJwkSetUri(gatewayProperties.getServices().getAuth().getUri() + "/.well-known/jwks.json")
                 .build();
 
-        String issuer = gatewayProperties.getServices().getAuth().getUri();
+        String issuer = gatewayProperties.getServices().getAuth().getServiceName();
         OAuth2TokenValidator<Jwt> issuerValidator = new JwtIssuerValidator(issuer);
         decoder.setJwtValidator(issuerValidator);
 

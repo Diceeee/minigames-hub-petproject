@@ -27,16 +27,3 @@ Gets all achievements that exist in game.
 
 ==== Get all items
 Gets all items that exist in game and can be purchased by users.
-
-=== Configuration for local run
-
-To run locally, you must configure application-secrets.yml to connect to MongoDB, example:
-
-```yaml
-spring:
-  data:
-    mongodb:
-      password: <password>
-      username: <username>
-      database: <database>
-```

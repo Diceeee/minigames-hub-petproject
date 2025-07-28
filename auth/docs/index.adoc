@@ -32,7 +32,7 @@ Auth service stores all such sessions and has ability to revoke sessions, making
 
 === Configuration for local run
 
-To run locally, you must configure application-secrets.yml to connect to Mail smtp serivice, your Gmail registered client and PostgreSQL database, example:
+To run with OAuth2/Email verification flows working, you must configure application-secrets.yml to connect to Mail smtp serivice, your Gmail registered client, example:
 
 ```yaml
 spring:
@@ -42,8 +42,7 @@ spring:
         registration:
           google:
             client-secret: <client-secret>
-  datasource:
-    password: <password_of_db_user>
   mail:
     password: <4-word phrase for gmail account, a.e. - 'milk wood ace fish'>
+    username: <email>
 ```

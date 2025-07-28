@@ -111,7 +111,7 @@ public class CoreGameService {
         UserSaveDocument createdSaveDocument = UserSaveDocument.builder()
                 .id(startGameInput.getUserDetails().getUserId())
                 .currencyIncomePerClick(gameConfig.getBasicCurrencyGainPerClick())
-                .userStatistics(UserStatisticsDocument.builder().build())
+                .userStatistics(UserStatisticsDocument.createNew())
                 .lastSessionId(startGameInput.getUserDetails().getSessionId())
                 .build();
 

@@ -11,6 +11,8 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Mapper(componentModel = "spring",
         unmappedTargetPolicy = ReportingPolicy.ERROR,
@@ -24,7 +26,7 @@ public interface UserMapper {
     @BeanMapping(ignoreUnmappedSourceProperties = {"accountNonExpired", "accountNonLocked", "credentialsNonExpired", "enabled", "registered"})
     UserEntity mapUserToEntity(User user);
 
-    @BeanMapping(ignoreUnmappedSourceProperties = {"accountNonExpired", "accountNonLocked", "credentialsNonExpired", "enabled", "registered"})
+    @BeanMapping(ignoreUnmappedSourceProperties = {"accountNonExpired", "accountNonLocked", "credentialsNonExpired", "enabled", "registered", "password", "createdAt", "googleId", "facebookId"})
     UserResponse mapToResponse(User user);
 
     default Collection<? extends GrantedAuthority> mapAuthoritiesFromListOfStrings(List<String> authorities) {
@@ -37,5 +39,11 @@ public interface UserMapper {
         return authorities.stream()
                 .map(GrantedAuthority::getAuthority)
                 .toList();
+    }
+
+    default Set<String> mapAuthoritiesToSetOfStrings(Collection<? extends GrantedAuthority> authorities) {
+        return authorities.stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.toSet());
     }
 }

@@ -1,0 +1,93 @@
+x-postgres-common: &postgres-common
+  DATASOURCE_HOST: postgres
+  DATASOURCE_PORT: 5432
+
+x-mongo-common: &mongo-common
+  MONGO_HOST: mongo
+  MONGO_PORT: 27017
+
+x-service-registry: &service-registry
+  SERVICE_REGISTRY_PORT: 8761
+  SERVICE_REGISTRY_HOST: service-registry
+
+services:
+  client:
+    build:
+      context: ./client
+      args:
+        REACT_APP_API_BASE_URL: http://localhost:9000
+    ports:
+      - "3000:80"
+    depends_on:
+      - auth-service
+      - game-clicker-service
+
+  service-registry:
+    build: ./service-registry
+    expose:
+      - '8761'
+
+  auth-service:
+    build: ./auth
+    ports: # use 'expose' for not dev
+      - "5000:5000"
+    depends_on:
+      - postgres
+      - service-registry
+    environment:
+      <<: [*postgres-common, *service-registry]
+      DATASOURCE_DB: auth_service_db
+      DATASOURCE_USER: auth_service_user
+      DATASOURCE_PASSWORD: dev_password
+      AUTH_FRONTEND_URL: http://localhost:3000
+
+  gateway-service:
+    build: ./gateway
+    ports: # use 'expose' for not dev
+      - "9000:9000"
+    depends_on:
+      - auth-service
+      - service-registry
+    environment:
+      <<: *service-registry
+      AUTH_SERVICE_HOST_URL: 'http://auth-service:5000'
+      GAME_CLICKER_SERVICE_HOST_URL: 'http://game-clicker-service:5001'
+
+  game-clicker-service:
+    build: ./game-clicker-service
+    ports: # use 'expose' for not dev
+      - "5001:5001"
+    depends_on:
+      - mongo
+      - service-registry
+    environment:
+      <<: [*mongo-common, *service-registry]
+      MONGO_DB: game_clicker_service_db
+      MONGO_USER: game_clicker_service_user
+      MONGO_PASSWORD: dev_password
+
+  postgres:
+    image: postgres:17
+    environment:
+      POSTGRES_PASSWORD: dev_password
+    expose:
+      - '5432'
+    volumes:
+      - postgres_volume:/var/lib/postgresql/data
+      - ./scripts/postgres:/docker-entrypoint-initdb.d:ro
+
+  mongo:
+    image: mongo:8.0
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: password
+      MONGO_INITDB_DATABASE: database
+    ports: # use expose for not dev
+      - '27018:27017'
+    volumes:
+      - mongodb_volume:/data/db
+      - ./scripts/mongodb:/docker-entrypoint-initdb.d:ro
+
+volumes:
+  postgres_volume:
+  mongodb_volume:

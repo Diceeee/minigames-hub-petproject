@@ -2,7 +2,6 @@ spring:
   mail:
     host: smtp.gmail.com
     port: 587
-    username: yaroslav.shestukhin@gmail.com
     properties:
       mail:
         smtp:
@@ -27,8 +26,9 @@ spring:
             user-info-uri: https://www.googleapis.com/oauth2/v3/userinfo
             user-name-attribute: sub
   datasource:
-    url: jdbc:postgresql://localhost:5432/auth_service_db
-    username: auth_service
+    url: jdbc:postgresql://${DATASOURCE_HOST:localhost}:${DATASOURCE_PORT:5432}/${DATASOURCE_DB:auth_service_db}
+    username: ${DATASOURCE_USER:auth_service}
+    password: ${DATASOURCE_PASSWORD}
     driver-class-name: org.postgresql.Driver
   jpa:
     enabled: true
@@ -49,7 +49,7 @@ server:
 eureka:
   client:
     service-url:
-      defaultZone: http://localhost:8761/eureka/
+      defaultZone: http://${SERVICE_REGISTRY_HOST:localhost}:${SERVICE_REGISTRY_PORT:8761}/eureka/
     register-with-eureka: true
     fetch-registry: true
     registry-fetch-interval-seconds: 30
@@ -83,3 +83,6 @@ management:
   endpoint:
     health:
       show-details: ALWAYS
+
+auth:
+  issuer-name: ${spring.application.name}

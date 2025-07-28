@@ -34,7 +34,7 @@ spring:
 eureka:
   client:
     service-url:
-      defaultZone: http://localhost:8761/eureka/
+      defaultZone: http://${SERVICE_REGISTRY_HOST:localhost}:${SERVICE_REGISTRY_PORT:8761}/eureka/
     register-with-eureka: true
     fetch-registry: true
     registry-fetch-interval-seconds: 5
@@ -48,10 +48,10 @@ server:
 gateway:
   services:
     auth:
-      uri: http://localhost:5000
+      uri: ${AUTH_SERVICE_HOST_URL:http://localhost:5000}
       service-name: auth-service
     game-clicker:
-      uri: http://localhost:5001
+      uri: ${GAME_CLICKER_SERVICE_HOST_URL:http://localhost:5001}
       service-name: game-clicker-service
     frontend:
       uri: http://localhost:3000

@@ -40,7 +40,7 @@ public class AuthConfigurationProperties {
 
         this.rsaKeyId = rsaKeyId == null ? "authKeyId" : rsaKeyId;
         this.issuerName = issuerName == null ? "http://localhost:5000" : issuerName;
-        
+
         this.trustProxyHeaders = trustProxyHeaders == null || trustProxyHeaders;
         this.preferExternalIp = preferExternalIp != null && preferExternalIp;
         this.frontendUrl = frontendUrl == null ? "http://localhost:3000" : frontendUrl;
