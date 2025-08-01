@@ -9,6 +9,7 @@ import com.dice.auth.token.OAuth2LoginTokensGeneratingAuthenticationSuccessHandl
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
+import lombok.Value;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
@@ -45,8 +46,8 @@ import java.util.Locale;
 public class SecurityConfiguration {
 
     @Bean
-    public JWKSet jwkSet() throws IOException, ParseException {
-        return JWKSet.load(new ClassPathResource("secrets/jwks.json").getInputStream());
+    public JWKSet jwkSet(AuthConfigurationProperties authProperties) throws IOException, ParseException {
+        return JWKSet.load(new ClassPathResource("secrets/" + authProperties.getJwksFileName()).getInputStream());
     }
 
     @Bean

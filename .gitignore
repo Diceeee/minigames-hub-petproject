@@ -57,3 +57,4 @@ yarn-debug.log*
 yarn-error.log*
 
 **/secrets/**
+!auth/src/main/resources/secrets/test-jwks.json

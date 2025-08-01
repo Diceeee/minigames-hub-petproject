@@ -86,3 +86,4 @@ management:
 
 auth:
   issuer-name: ${spring.application.name}
+  jwks-file-name: test-jwks.json # For dev only

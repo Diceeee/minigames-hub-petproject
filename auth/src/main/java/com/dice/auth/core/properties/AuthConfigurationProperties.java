@@ -25,12 +25,13 @@ public class AuthConfigurationProperties {
     boolean preferExternalIp;
 
     String frontendUrl;
+    String jwksFileName;
 
     @ConstructorBinding
     public AuthConfigurationProperties(Integer refreshWindowInMinutes, Integer refreshTokenExpirationInDays, Integer accessTokenExpirationInMinutes,
                                        Integer verificationEmailRateLimitInMinutesPerUser, Integer expireEmailVerificationsMinutes, Integer expireNotRegisteredUsersMinutes,
                                        String rsaKeyId, String issuerName,
-                                       Boolean trustProxyHeaders, Boolean preferExternalIp, String frontendUrl) {
+                                       Boolean trustProxyHeaders, Boolean preferExternalIp, String frontendUrl, String jwksFileName) {
         this.refreshWindowInMinutes = refreshWindowInMinutes == null ? 5 : refreshWindowInMinutes;
         this.refreshTokenExpirationInDays = refreshTokenExpirationInDays == null ? 60 : refreshTokenExpirationInDays;
         this.accessTokenExpirationInMinutes = accessTokenExpirationInMinutes == null ? 15 : accessTokenExpirationInMinutes;
@@ -44,5 +45,6 @@ public class AuthConfigurationProperties {
         this.trustProxyHeaders = trustProxyHeaders == null || trustProxyHeaders;
         this.preferExternalIp = preferExternalIp != null && preferExternalIp;
         this.frontendUrl = frontendUrl == null ? "http://localhost:3000" : frontendUrl;
+        this.jwksFileName = jwksFileName == null ? "jwks.json" : jwksFileName;
     }
 }
