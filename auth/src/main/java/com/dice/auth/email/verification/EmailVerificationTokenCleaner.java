@@ -21,7 +21,7 @@ public class EmailVerificationTokenCleaner {
     private final Clock clock;
 
     @Transactional
-    @Scheduled(fixedRate = 60000)
+    @Scheduled(fixedRate = 3_600_000)
     public void cleanExpiredEmailVerificationTokens() {
         log.info("Cleaning expired email verification tokens that were not used in {} minutes since created", authProperties.getExpireEmailVerificationsMinutes());
         Instant expiredBefore = clock.instant().minus(authProperties.getExpireEmailVerificationsMinutes(), ChronoUnit.MINUTES);

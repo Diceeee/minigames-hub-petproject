@@ -30,7 +30,7 @@ public class RegistrationNotFinishedUsersCleaner {
     private final Clock clock;
 
     @Transactional
-    @Scheduled(fixedRate = 60000)
+    @Scheduled(fixedRate = 3_600_000)
     public void cleanUsersThatNotFinishedRegistrationForLongTime() {
 
         Instant expiredBefore = clock.instant().minus(authProperties.getExpireNotRegisteredUsersMinutes(), ChronoUnit.MINUTES);
